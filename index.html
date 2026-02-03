@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💱</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22/><text x=%225%22 y=%22.85em%22 font-size=%2280%22>💱</text></svg>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <title>MINAS SUPER APP</title>
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc;
+            --subtext: #94a3b8; --up: #4ade80; --down: #f87171; --nav-bg: #1e293b;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; justify-content: center; overflow-x: hidden; }
+        
+        /* Layout Utama */
+        .app-container { width: 100%; max-width: 420px; min-height: 100vh; padding-bottom: 80px; position: relative; }
+        .page { display: none; padding: 20px 15px; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Global Header Style */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-top: 10px; }
+        .brand { font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
+        .kurs-info { font-size: 11px; color: var(--subtext); background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px; border: 1px solid #334155; }
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: var(--nav-bg); display: flex; justify-content: space-around; padding: 10px 0 25px 0; border-top: 1px solid #334155; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--subtext); cursor: pointer; flex: 1; transition: 0.2s; }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; }
+        .nav-label { font-size: 10px; font-weight: bold; text-transform: uppercase; }
+
+        /* Shared Components (Card, Logo, Input) */
+        .card { background: var(--card); border-radius: 16px; padding: 15px; border: 1px solid #334155; margin-bottom: 15px; }
+        .logo-wrapper { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 1px solid #475569; background: #000; display: flex; align-items: center; justify-content: center; }
+        .logo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        input { background: rgba(0,0,0,0.2); border: 1px solid #334155; border-radius: 8px; color: white; outline: none; padding: 8px; font-weight: bold; }
+        .btn-accent { background: var(--accent); border: none; color: #0f172a; border-radius: 10px; font-weight: bold; cursor: pointer; padding: 10px 15px; }
+
+        /* Styles dari Portofolio */
+        .summary-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--accent); text-align: center; }
+        .coin-row { position: relative; margin-bottom: 10px; }
+        .coin-card { background: var(--card); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #334155; }
+        .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 20px 15px 15px 15px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
+        .up { color: var(--up); } .down { color: var(--down); }
+
+        /* Styles dari KURS */
+        .kurs-row { display: flex; align-items: center; gap: 10px; background: var(--card); padding: 10px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #334155; position: relative; }
+        .price-change { font-size: 11px; font-weight: 800; min-width: 50px; text-align: right; }
+
+        /* Styles dari APR */
+        .apr-grid { display: grid; gap: 10px; margin-top: 15px; }
+        .apr-card { padding: 15px; border-radius: 15px; text-align: center; }
+        .apr-val { font-size: 18px; font-weight: 800; display: block; }
+        .harian { background: rgba(56, 189, 248, 0.1); color: #38bdf8; }
+        .bulanan { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div id="page-portofolio" class="page active">
+        <div class="header">
+            <div class="brand">PORTOFOLIO</div>
+            <div class="kurs-info global-kurs">USD/IDR: ...</div>
+        </div>
+        <div class="summary-card">
+            <span style="font-size: 10px; color: var(--accent); letter-spacing: 1px;">TOTAL SALDO ESTIMASI</span>
+            <span id="porto-total-idr" style="font-size: 26px; font-weight: 800; display: block;">Rp 0</span>
+            <span id="porto-total-usd" style="color: var(--subtext); font-size: 14px;">$0.00</span>
+        </div>
+        <input type="text" id="porto-search" style="width:100%; margin-bottom:15px;" placeholder="Cari aset..." oninput="renderPorto()">
+        <div id="porto-list"></div>
+        <div class="card" style="margin-top:20px; border-style: dashed;">
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="add-porto-sym" style="flex:1" placeholder="Simbol (MISAL: SUI)">
+                <button class="btn-accent" onclick="addPortoCoin()">Tambah</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-kurs" class="page">
+        <div class="header">
+            <div class="brand">KURS ENGINE</div>
+            <div class="kurs-info global-kurs">USD/IDR: ...</div>
+        </div>
+        <div class="card" style="border-left: 4px solid #ef4444;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div class="logo-wrapper"><img src="https://api.iconify.design/emojione:flag-for-indonesia.svg"></div>
+                <div style="flex:1"><label style="font-size:10px; color:var(--subtext);">IDR</label><input type="text" id="kurs-idr" style="width:100%; font-size:18px;" placeholder="0" oninput="handleKursInput('idr')"></div>
+            </div>
+        </div>
+        <div class="card" style="border-left: 4px solid #3b82f6;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div class="logo-wrapper"><img src="https://api.iconify.design/emojione:flag-for-united-states.svg"></div>
+                <div style="flex:1"><label style="font-size:10px; color:var(--subtext);">USD</label><input type="text" id="kurs-usd" style="width:100%; font-size:18px;" placeholder="0" oninput="handleKursInput('usd')"></div>
+            </div>
+        </div>
+        <div id="kurs-watchlist"></div>
+        <div class="card" style="margin-top:20px;">
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="add-kurs-sym" style="flex:1" placeholder="Tambah koin live...">
+                <button class="btn-accent" onclick="addKursCoin()">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-apr" class="page">
+        <div class="header">
+            <div class="brand">APR CALC</div>
+            <div class="kurs-info global-kurs">USD/IDR: ...</div>
+        </div>
+        <div class="card">
+            <label style="font-size:11px; color:var(--subtext);">JUMLAH SALDO</label>
+            <input type="text" id="apr-saldo" style="width:100%; font-size:20px; margin:8px 0;" placeholder="0" oninput="hitungApr()">
+            <div id="apr-terbilang" style="font-size:12px; color:var(--accent);">Rp 0</div>
+            <br>
+            <label style="font-size:11px; color:var(--subtext);">BUNGA PER TAHUN (%)</label>
+            <input type="text" id="apr-bunga" style="width:100%; font-size:20px; margin:8px 0;" placeholder="0" oninput="hitungApr()">
+        </div>
+        <div class="apr-grid">
+            <div class="apr-card harian"><span style="font-size:10px;">HARIAN</span><span id="apr-h-idr" class="apr-val">Rp 0</span><span id="apr-h-usd" style="font-size:11px;">$0</span></div>
+            <div class="apr-card bulanan"><span style="font-size:10px;">BULANAN</span><span id="apr-b-idr" class="apr-val">Rp 0</span><span id="apr-b-usd" style="font-size:11px;">$0</span></div>
+            <div class="apr-card tahunan" style="background:rgba(251,191,36,0.1); color:#fbbf24;"><span style="font-size:10px;">TAHUNAN</span><span id="apr-t-idr" class="apr-val">Rp 0</span><span id="apr-t-usd" style="font-size:11px;">$0</span></div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchPage('portofolio')">
+            <span class="nav-icon">📊</span><span class="nav-label">Porto</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('kurs')">
+            <span class="nav-icon">💱</span><span class="nav-label">Kurs</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('apr')">
+            <span class="nav-icon">💰</span><span class="nav-label">APR</span>
+        </div>
+    </nav>
+</div>
+
+<script>
+    // --- STATE MANAGEMENT (SHARED) ---
+    let usdToIdr = parseFloat(localStorage.getItem('last_usd_idr')) || 16000;
+    let prices = { BTC: 0, ETH: 0 };
+    let changes = { BTC: 0, ETH: 0 };
+    
+    // Data Portofolio
+    let portoAssets = JSON.parse(localStorage.getItem('my_assets_v2') || '["BTC", "ETH"]');
+    let portoBalances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
+    let portoSources = JSON.parse(localStorage.getItem('my_coin_sources') || '{}');
+    let expandedPorto = null;
+
+    // Data Kurs
+    let kursWatchlist = JSON.parse(localStorage.getItem('kurs_fast_v3')) || ["BTC", "ETH"];
+
+    // --- CORE ENGINE ---
+    window.onload = async () => {
+        await updateGlobalKurs();
+        startPriceEngine();
+        switchPage('portofolio'); // Default
+    };
+
+    async function updateGlobalKurs() {
+        try {
+            const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=idr');
+            const d = await r.json();
+            if(d['usd-coin']?.idr) {
+                usdToIdr = d['usd-coin'].idr;
+                localStorage.setItem('last_usd_idr', usdToIdr);
+                document.querySelectorAll('.global-kurs').forEach(el => {
+                    el.innerText = `USD/IDR: ${new Intl.NumberFormat('id-ID').format(usdToIdr)}`;
+                });
+            }
+        } catch(e) { console.log("Kurs offline"); }
+    }
+
+    async function startPriceEngine() {
+        const allSymbols = [...new Set([...portoAssets, ...kursWatchlist, "BTC", "ETH"])];
+        for (let s of allSymbols) {
+            try {
+                const rb = await fetch(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${s.toUpperCase()}USDT`);
+                const db = await rb.json();
+                if(db.result?.list?.[0]) {
+                    const t = db.result.list[0];
+                    prices[s.toUpperCase()] = parseFloat(t.lastPrice);
+                    changes[s.toUpperCase()] = ((prices[s.toUpperCase()] - parseFloat(t.prevPrice24h)) / parseFloat(t.prevPrice24h)) * 100;
+                }
+            } catch(e) {}
+        }
+        renderPorto();
+        renderKurs();
+        setTimeout(startPriceEngine, 30000); // Auto update tiap 30 detik
+    }
+
+    // --- UTILS ---
+    function switchPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + pageId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function handleLogoError(img, sym) {
+        const wrapper = img.parentElement;
+        wrapper.style.background = '#000';
+        wrapper.innerHTML = `<span style="font-size:12px; font-weight:bold; color:var(--accent);">${sym.substring(0,2).toUpperCase()}</span>`;
+    }
+
+    function formatIDR(num) { return "Rp " + Math.round(num).toLocaleString('id-ID'); }
+    function formatUSD(num) { return "$" + num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: (num < 1 ? 6 : 2)}); }
+
+    // --- PORTOFOLIO LOGIC ---
+    function renderPorto() {
+        const list = document.getElementById('porto-list');
+        const query = document.getElementById('porto-search').value.toUpperCase();
+        list.innerHTML = "";
+        let totalUsd = 0;
+
+        portoAssets.filter(s => s.includes(query)).forEach(sym => {
+            const price = prices[sym] || 0;
+            const bal = getPortoTotal(sym);
+            const valUsd = bal * price;
+            totalUsd += valUsd;
+
+            list.innerHTML += `
+                <div class="coin-row">
+                    <div class="coin-card" onclick="togglePortoDetail('${sym}')">
+                        <div class="logo-wrapper"><img src="https://coinicons-api.vercel.app/api/icon/${sym.toLowerCase()}" onerror="handleLogoError(this, '${sym}')"></div>
+                        <div style="flex:1">
+                            <span style="font-weight:bold;">${sym}</span>
+                            <span class="change-pct ${changes[sym] >= 0 ? 'up' : 'down'}" style="font-size:10px; margin-left:5px;">${changes[sym] >= 0 ? '+' : ''}${changes[sym]?.toFixed(2)}%</span><br>
+                            <span style="font-size:11px; color:var(--subtext);">${formatUSD(price)}</span>
+                        </div>
+                        <div style="text-align:right">
+                            <span style="font-weight:bold;">${bal.toLocaleString()}</span><br>
+                            <span style="font-size:10px; color:var(--subtext);">${formatIDR(valUsd * usdToIdr)}</span>
+                        </div>
+                    </div>
+                    <div id="porto-det-${sym}" class="details" style="display:${expandedPorto === sym ? 'block' : 'none'}">
+                        ${(portoSources[sym] || ["Binance", "Bybit"]).map(src => `
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:center;">
+                                <span style="font-size:12px; color:var(--subtext)">${src}</span>
+                                <input type="number" style="width:100px; text-align:right;" value="${portoBalances[sym]?.[src] || ''}" oninput="updatePortoBal('${sym}','${src}',this.value)">
+                            </div>
+                        `).join('')}
+                        <button onclick="removePortoCoin('${sym}')" style="width:100%; background:rgba(248,113,113,0.1); color:var(--down); border:none; padding:8px; border-radius:8px; margin-top:10px; font-size:11px;">HAPUS KOIN</button>
+                    </div>
+                </div>`;
+        });
+        document.getElementById('porto-total-idr').innerText = formatIDR(totalUsd * usdToIdr);
+        document.getElementById('porto-total-usd').innerText = formatUSD(totalUsd);
+    }
+
+    function getPortoTotal(sym) {
+        let t = 0;
+        (portoSources[sym] || ["Binance", "Bybit"]).forEach(src => t += parseFloat(portoBalances[sym]?.[src] || 0));
+        return t;
+    }
+
+    function togglePortoDetail(s) { expandedPorto = (expandedPorto === s) ? null : s; renderPorto(); }
+
+    function updatePortoBal(s, src, v) {
+        if(!portoBalances[s]) portoBalances[s] = {};
+        portoBalances[s][src] = v;
+        localStorage.setItem('my_balances_v2', JSON.stringify(portoBalances));
+        renderPorto();
+    }
+
+    function addPortoCoin() {
+        const s = document.getElementById('add-porto-sym').value.toUpperCase().trim();
+        if(s && !portoAssets.includes(s)) {
+            portoAssets.push(s);
+            localStorage.setItem('my_assets_v2', JSON.stringify(portoAssets));
+            document.getElementById('add-porto-sym').value = "";
+            startPriceEngine();
+        }
+    }
+
+    function removePortoCoin(s) {
+        if(confirm(`Hapus ${s} dari portofolio?`)) {
+            portoAssets = portoAssets.filter(i => i !== s);
+            localStorage.setItem('my_assets_v2', JSON.stringify(portoAssets));
+            renderPorto();
+        }
+    }
+
+    // --- KURS LOGIC ---
+    function renderKurs() {
+        const container = document.getElementById('kurs-watchlist');
+        container.innerHTML = "";
+        kursWatchlist.forEach(s => {
+            const p = prices[s] || 0;
+            const c = changes[s] || 0;
+            container.innerHTML += `
+                <div class="kurs-row">
+                    <div class="logo-wrapper"><img src="https://coinicons-api.vercel.app/api/icon/${s.toLowerCase()}" onerror="handleLogoError(this, '${s}')"></div>
+                    <div style="flex:1"><label style="font-size:10px; color:var(--subtext);">${s}</label><span style="display:block; font-size:10px; color:var(--accent);">${formatUSD(p)}</span></div>
+                    <div style="flex:2"><input type="text" id="kurs-${s.toLowerCase()}" style="width:100%;" placeholder="0" oninput="handleKursInput('${s.toLowerCase()}')"></div>
+                    <div class="price-change ${c >= 0 ? 'up' : 'down'}">${c >= 0 ? '+' : ''}${c.toFixed(2)}%</div>
+                    <div onclick="removeKursCoin('${s}')" style="color:var(--down); font-weight:bold; padding-left:5px; cursor:pointer;">×</div>
+                </div>`;
+        });
+    }
+
+    function handleKursInput(id) {
+        let val = parseFloat(document.getElementById('kurs-' + id).value.replace(/,/g, '')) || 0;
+        let baseUsd = (id === 'idr') ? val / usdToIdr : (id === 'usd') ? val : val * (prices[id.toUpperCase()] || 0);
+        
+        // Update all other inputs
+        const fields = ['idr', 'usd', ...kursWatchlist.map(s => s.toLowerCase())];
+        fields.forEach(f => {
+            if(f !== id) {
+                let target = document.getElementById('kurs-' + f);
+                if(!target) return;
+                let res = (f === 'idr') ? baseUsd * usdToIdr : (f === 'usd') ? baseUsd : baseUsd / (prices[f.toUpperCase()] || 1);
+                
+                let dec = (f === 'idr') ? 0 : (res < 1 ? 6 : 2);
+                target.value = res.toLocaleString('en-US', {maximumFractionDigits: dec});
+            }
+        });
+    }
+
+    function addKursCoin() {
+        const s = document.getElementById('add-kurs-sym').value.toUpperCase().trim();
+        if(s && !kursWatchlist.includes(s)) {
+            kursWatchlist.push(s);
+            localStorage.setItem('kurs_fast_v3', JSON.stringify(kursWatchlist));
+            document.getElementById('add-kurs-sym').value = "";
+            startPriceEngine();
+        }
+    }
+
+    function removeKursCoin(s) {
+        kursWatchlist = kursWatchlist.filter(i => i !== s);
+        localStorage.setItem('kurs_fast_v3', JSON.stringify(kursWatchlist));
+        renderKurs();
+    }
+
+    // --- APR LOGIC ---
+    function hitungApr() {
+        let saldo = parseFloat(document.getElementById('apr-saldo').value.replace(/,/g, '')) || 0;
+        let bunga = parseFloat(document.getElementById('apr-bunga').value) || 0;
+        
+        // Update UI format
+        document.getElementById('apr-terbilang').innerText = formatIDR(saldo);
+
+        let tahunan = saldo * (bunga / 100);
+        let p = { t: tahunan, b: tahunan / 12, h: tahunan / 365 };
+
+        for (let k in p) {
+            document.getElementById(`apr-${k}-idr`).innerText = formatIDR(p[k]);
+            document.getElementById(`apr-${k}-usd`).innerText = formatUSD(p[k] / usdToIdr);
+        }
+    }
+</script>
+</body>
+</html>
