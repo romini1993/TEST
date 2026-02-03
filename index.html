@@ -3,431 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💱</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22/><text x=%225%22 y=%22.85em%22 font-size=%2280%22>💱</text></svg>">
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
-    <title>MINAS SUPER APP</title>
+    <title>MULTI CRYPTO</title>
     <style>
-        :root {
-            --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc;
-            --subtext: #94a3b8; --up: #4ade80; --down: #f87171;
+        :root { 
+            --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; 
+            --text: #f8fafc; --subtext: #94a3b8; --up: #4ade80; --down: #f87171; 
         }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-
-        /* TAB SYSTEM */
-        .tab-content { display: none; padding-bottom: 90px; }
-        .tab-content.active { display: block; }
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; justify-content: center; }
         
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
-            width: 100%; max-width: 420px; background: #1e293b; 
-            display: flex; justify-content: space-around; 
-            padding: 10px 0 25px 0; border-top: 1px solid #334155; z-index: 9999;
+        /* Navigasi Bawah */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; max-width: 420px; height: 70px;
+            background: #161e2e; display: flex; justify-content: space-around;
+            align-items: center; border-top: 1px solid #334155; z-index: 1000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--subtext); cursor: pointer; flex: 1; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--subtext); cursor: pointer; font-size: 12px; font-weight: bold; flex: 1; }
         .nav-item.active { color: var(--accent); }
-        .nav-icon { font-size: 20px; }
-        .nav-label { font-size: 10px; font-weight: bold; margin-top: 2px; }
+        .nav-icon { font-size: 20px; margin-bottom: 4px; }
 
-        /* --- CSS ASLI PORTO --- */
-        .porto-container { width: 100%; max-width: 400px; margin: auto; padding: 20px; }
-        .porto-card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #334155; }
-        .porto-coin-row { position: relative; width: 100%; margin-bottom: 10px; }
-        .porto-coin-card { background: var(--card); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #334155; cursor: pointer; }
-        .porto-details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 20px 15px 15px 15px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
-        .porto-logo { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #000; border: 1px solid #475569; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .porto-logo img { width: 100%; height: 100%; object-fit: cover; }
-        .porto-input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid #334155; border-radius: 8px; color: white; padding: 8px; outline: none; }
-        .porto-delete { position: absolute; right: -25px; top: 18px; color: #ef4444; font-size: 20px; cursor: pointer; }
+        /* Container Utama */
+        .app-shell { width: 100%; max-width: 420px; min-height: 100vh; position: relative; padding-bottom: 80px; }
+        .tab-content { display: none; padding: 15px; }
+        .tab-content.active { display: block; }
 
-        /* --- CSS ASLI KURS --- */
-        .kurs-container { width: 100%; max-width: 420px; margin: auto; padding: 10px 15px; }
-        .kurs-info-box { font-size: 12px; color: var(--subtext); background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 8px; border: 1px solid #334155; }
-        .kurs-coin-card { background: var(--card); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #334155; height: 62px; margin-bottom: 10px; }
+        /* Header Kurs Global (Pojok Kanan Atas) */
+        .global-header {
+            position: sticky; top: 0; display: flex; justify-content: flex-end;
+            padding: 10px 15px; background: var(--bg); z-index: 999;
+        }
+        .kurs-info-global { font-size: 10px; color: var(--subtext); background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 8px; border: 1px solid #334155; }
 
-        /* --- CSS ASLI APR --- */
-        .apr-container { width: 100%; max-width: 400px; margin: auto; padding: 40px 20px; }
-        .apr-input-box { width: 100%; padding: 16px; margin-bottom: 5px; border: 2px solid #334155; border-radius: 16px; background: var(--card); }
-        .apr-grid { display: grid; gap: 12px; }
-        .apr-card { padding: 18px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .apr-val { font-size: 22px; font-weight: 800; display: block; margin-top: 4px; }
-
-        /* UTILS */
+        /* --- Gabungan CSS All Apps (Disederhanakan agar tidak bentrok) --- */
+        .summary-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--accent); text-align: center; }
+        .summary-idr { font-size: 26px; font-weight: 800; display: block; }
+        .coin-row { position: relative; margin-bottom: 10px; }
+        .coin-card { background: var(--card); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #334155; cursor: pointer; }
+        .logo-wrapper { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; border: 1px solid #475569; flex-shrink: 0; background: #000; display: flex; align-items: center; justify-content: center; }
+        .logo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 20px 15px 15px 15px; border-radius: 0 0 12px 12px; border: 1px solid #334155; }
+        .source-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+        .source-input { width: 100px; background: #000; border: 1px solid #475569; color: #fff; text-align: right; border-radius: 6px; padding: 4px; font-size: 13px; }
         .up { color: var(--up); } .down { color: var(--down); }
-        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .input-box-kurs input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid #334155; border-radius: 6px; color: white; font-size: 16px; font-weight: bold; outline: none; padding: 6px 8px; }
+        .apr-card { padding: 18px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;}
+        .currency-switch { display: flex; gap: 8px; margin-bottom: 25px; background: var(--card); padding: 4px; border-radius: 12px; }
+        .currency-switch button { flex: 1; padding: 10px; border: none; border-radius: 9px; cursor: pointer; font-weight: bold; background: transparent; color: var(--subtext); }
+        .currency-switch button.active { background: var(--accent); color: #0f172a; }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <div id="tab-porto" class="tab-content porto-container active">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="margin:0; color:var(--accent);">PORTOFOLIO</h2>
-            <div class="kurs-info-box global-kurs">USD/IDR: ...</div>
-        </div>
-        
-        <div class="porto-card" style="text-align:center; border: 1px solid var(--accent);">
-            <div style="font-size:11px; color:var(--accent); letter-spacing:1px;">ESTIMASI SALDO TOTAL</div>
-            <div id="porto-total-idr" style="font-size:28px; font-weight:800; margin:5px 0;">Rp 0</div>
-            <div id="porto-total-usd" style="color:var(--subtext); font-size:14px;">$0.00</div>
-        </div>
+<div class="app-shell">
+    <div class="global-header">
+        <div id="global-kurs-val" class="kurs-info-global">USD/IDR: Loading...</div>
+    </div>
 
-        <input type="text" id="porto-search" class="porto-input" placeholder="Cari koin..." oninput="renderPorto()" style="margin-bottom:15px;">
+    <div id="tab-porto" class="tab-content active">
+        <div class="brand" style="font-size: 20px; font-weight: bold; color: var(--accent); margin-bottom: 20px;">PORTOFOLIO</div>
+        <div class="summary-card">
+            <span style="font-size: 11px; color: var(--accent); letter-spacing: 1px;">TOTAL SALDO</span>
+            <span id="porto-total-idr" class="summary-idr">Rp 0</span>
+            <span id="porto-total-usd" style="color: var(--subtext); font-size: 14px;">$0.00</span>
+        </div>
+        <input type="text" id="porto-filter" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #334155; border-radius: 12px; padding: 12px 15px; color: white; margin-bottom: 12px;" placeholder="Cari koin di list..." oninput="porto_render()">
         <div id="porto-list"></div>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #334155;">
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="porto-add-input" style="flex:1; background: var(--card); border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px;" placeholder="Tambah koin (misal: SUI)">
+                <button onclick="porto_addCoin()" style="background: var(--accent); border: none; padding: 0 20px; border-radius: 10px; font-weight: bold;">+</button>
+            </div>
+        </div>
+    </div>
 
-        <div class="porto-card" style="border-style:dashed;">
+    <div id="tab-kurs" class="tab-content">
+        <div style="text-align:center; margin-bottom:20px;"><h2 style="color:var(--accent); margin:0;">💱 KURS</h2></div>
+        <div id="kurs-fixed-list">
+            <div class="coin-card" style="border-left: 4px solid #ef4444;">
+                <div class="logo-wrapper"><img src="https://api.iconify.design/emojione:flag-for-indonesia.svg"></div>
+                <div style="min-width:70px;"><label style="font-size:11px; color:var(--subtext); font-weight:bold;">IDR</label></div>
+                <div class="input-box-kurs" style="flex:1;"><input type="text" id="kurs-idr" inputmode="decimal" placeholder="0" oninput="kurs_handle('idr')"></div>
+            </div>
+            <div style="height:10px"></div>
+            <div class="coin-card" style="border-left: 4px solid #3b82f6;">
+                <div class="logo-wrapper"><img src="https://api.iconify.design/emojione:flag-for-united-states.svg"></div>
+                <div style="min-width:70px;"><label style="font-size:11px; color:var(--subtext); font-weight:bold;">USD</label></div>
+                <div class="input-box-kurs" style="flex:1;"><input type="text" id="kurs-usd" inputmode="decimal" placeholder="0" oninput="kurs_handle('usd')"></div>
+            </div>
+        </div>
+        <div id="kurs-watchlist" style="margin-top:10px"></div>
+        <div style="margin-top:20px; border-top: 1px dashed #334155; padding-top:20px;">
             <div style="display:flex; gap:8px;">
-                <input type="text" id="porto-add-sym" class="porto-input" placeholder="Simbol (Contoh: SUI)">
-                <button onclick="addPortoCoin()" style="background:var(--accent); border:none; padding:10px 15px; border-radius:8px; font-weight:bold;">TAMBAH</button>
-            </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
-            <button onclick="exportData()" style="background:#334155; color:white; border:none; padding:10px; border-radius:8px; font-size:11px;">BACKUP JSON</button>
-            <button onclick="importData()" style="background:#334155; color:white; border:none; padding:10px; border-radius:8px; font-size:11px;">RESTORE JSON</button>
-        </div>
-        <button onclick="resetData()" style="width:100%; background:rgba(244,63,94,0.1); color:#f43f5e; border:1px solid #f43f5e; padding:10px; border-radius:8px; margin-top:10px; font-size:11px;">RESET SEMUA DATA</button>
-    </div>
-
-    <div id="tab-kurs" class="tab-content kurs-container">
-        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; padding-top: 10px;">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;"><h2>💱 KURS</h2></div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="kurs-info-box global-kurs">USD/IDR: ...</div>
-                <button onclick="fetchPrices()" style="background:var(--card); border:1px solid var(--accent); color:var(--accent); padding:8px 14px; border-radius:10px; font-size:12px; font-weight:bold;">🔄 Update</button>
-            </div>
-        </div>
-        
-        <div class="kurs-coin-card" style="border-left: 4px solid #ef4444;">
-            <div class="porto-logo"><img src="https://api.iconify.design/emojione:flag-for-indonesia.svg"></div>
-            <div style="min-width:70px;"><label style="font-size:11px; color:var(--subtext); font-weight:bold;">IDR</label><br><span style="font-size:10px; color:var(--accent);">Rupiah</span></div>
-            <input type="text" id="kurs-idr" class="porto-input" inputmode="decimal" placeholder="0" oninput="handleKursCalc('idr')">
-        </div>
-
-        <div class="kurs-coin-card" style="border-left: 4px solid #3b82f6;">
-            <div class="porto-logo"><img src="https://api.iconify.design/emojione:flag-for-united-states.svg"></div>
-            <div style="min-width:70px;"><label style="font-size:11px; color:var(--subtext); font-weight:bold;">USD</label><br><span style="font-size:10px; color:var(--accent);">Dollar</span></div>
-            <input type="text" id="kurs-usd" class="porto-input" inputmode="decimal" placeholder="0" oninput="handleKursCalc('usd')">
-        </div>
-
-        <div id="kurs-list"></div>
-
-        <div style="margin-top:30px; border-top:1px dashed #334155; padding-top:20px;">
-            <div style="display:flex; gap:8px;">
-                <input type="text" id="kurs-add-sym" class="porto-input" placeholder="Tambah koin (SUI, SOL, XRP)">
-                <button onclick="addKursCoin()" style="background:var(--accent); color:#0f172a; border:none; padding:0 15px; border-radius:10px; font-weight:bold;">Tambah</button>
+                <input type="text" id="kurs-add-input" style="flex:1; background: var(--card); border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px;" placeholder="Tambah koin (SUI, SOL)">
+                <button onclick="kurs_addCoin()" style="background: var(--accent); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold;">Tambah</button>
             </div>
         </div>
     </div>
 
-    <div id="tab-apr" class="tab-content apr-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <h2 style="margin:0; color:var(--accent);">💰 APR Pro</h2>
-            <div class="kurs-info-box global-kurs">USD/IDR: ...</div>
+    <div id="tab-apr" class="tab-content">
+        <h2 style="color:var(--accent); margin-bottom:20px;">💰 APR Pro</h2>
+        <div class="currency-switch">
+            <button id="apr-btn-idr" class="active" onclick="apr_setCurr('IDR')">IDR (Rp)</button>
+            <button id="apr-btn-usd" onclick="apr_setCurr('USD')">USD ($)</button>
         </div>
-
-        <label style="display:block; font-weight:600; margin-bottom:8px; font-size:13px; color:var(--subtext); text-transform:uppercase;">Mata Uang</label>
-        <div style="display:flex; gap:8px; margin-bottom:25px; background:var(--card); padding:4px; border-radius:12px;">
-            <button id="apr-btn-idr" class="active" onclick="setAprCurrency('IDR')" style="flex:1; padding:10px; border:none; border-radius:9px; font-weight:bold; cursor:pointer; background:var(--accent);">IDR</button>
-            <button id="apr-btn-usd" onclick="setAprCurrency('USD')" style="flex:1; padding:10px; border:none; border-radius:9px; font-weight:bold; cursor:pointer; background:transparent; color:var(--subtext);">USD</button>
+        <label style="display:block; font-size:13px; color:var(--subtext); margin-bottom:8px;">JUMLAH SALDO</label>
+        <div style="background:var(--card); padding:16px; border-radius:16px; border:2px solid #334155; margin-bottom:20px;">
+            <input type="text" id="apr-saldo" style="width:100%; background:transparent; border:none; color:white; font-size:22px; font-weight:bold; outline:none;" placeholder="0" oninput="apr_hitung()">
         </div>
-
-        <label style="display:block; font-weight:600; margin-bottom:8px; font-size:13px; color:var(--subtext);">JUMLAH SALDO</label>
-        <div class="apr-input-box"><input type="text" id="apr-saldo" style="width:100%; background:transparent; border:none; color:white; font-size:22px; font-weight:bold; outline:none;" placeholder="0" oninput="hitungApr()"></div>
-        <div id="apr-cek-saldo" style="font-size:13px; color:var(--accent); margin-bottom:25px; min-height:18px;"></div>
-
-        <label style="display:block; font-weight:600; margin-bottom:8px; font-size:13px; color:var(--subtext);">BUNGA PER TAHUN (%)</label>
-        <div class="apr-input-box"><input type="text" id="apr-bunga" style="width:100%; background:transparent; border:none; color:white; font-size:22px; font-weight:bold; outline:none;" placeholder="0" oninput="hitungApr()"></div>
-
-        <div class="apr-grid">
-            <div class="apr-card" style="background:rgba(56,189,248,0.08); color:#38bdf8;"><span style="font-size:10px; font-weight:bold; text-transform:uppercase;">Harian</span><span id="apr-harian" class="apr-val">0</span><span id="apr-harian-sub" style="font-size:12px; opacity:0.7;"></span></div>
-            <div class="apr-card" style="background:rgba(74,222,128,0.08); color:#4ade80;"><span style="font-size:10px; font-weight:bold; text-transform:uppercase;">Bulanan</span><span id="apr-bulanan" class="apr-val">0</span><span id="apr-bulanan-sub" style="font-size:12px; opacity:0.7;"></span></div>
-            <div class="apr-card" style="background:rgba(251,191,36,0.08); color:#fbbf24;"><span style="font-size:10px; font-weight:bold; text-transform:uppercase;">Tahunan</span><span id="apr-tahunan" class="apr-val">0</span><span id="apr-tahunan-sub" style="font-size:12px; opacity:0.7;"></span></div>
+        <label style="display:block; font-size:13px; color:var(--subtext); margin-bottom:8px;">BUNGA PER TAHUN (%)</label>
+        <div style="background:var(--card); padding:16px; border-radius:16px; border:2px solid #334155; margin-bottom:20px;">
+            <input type="text" id="apr-bunga" style="width:100%; background:transparent; border:none; color:white; font-size:22px; font-weight:bold; outline:none;" placeholder="0" oninput="apr_hitung()">
+        </div>
+        <div id="apr-results">
+            <div class="apr-card" style="background: rgba(56, 189, 248, 0.08); color: #38bdf8;"><span style="font-size:10px; font-weight:bold; text-transform:uppercase;">Harian</span><br><span id="apr-harian" style="font-size:22px; font-weight:800;">0</span></div>
+            <div class="apr-card" style="background: rgba(74, 222, 128, 0.08); color: #4ade80;"><span style="font-size:10px; font-weight:bold; text-transform:uppercase;">Bulanan</span><br><span id="apr-bulanan" style="font-size:22px; font-weight:800;">0</span></div>
+            <div class="apr-card" style="background: rgba(251, 191, 36, 0.08); color: #fbbf24;"><span style="font-size:10px; font-weight:bold; text-transform:uppercase;">Tahunan</span><br><span id="apr-tahunan" style="font-size:22px; font-weight:800;">0</span></div>
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('porto')"><span class="nav-icon">📊</span><span class="nav-label">PORTO</span></div>
-        <div class="nav-item" onclick="switchTab('kurs')"><span class="nav-icon">💱</span><span class="nav-label">KURS</span></div>
-        <div class="nav-item" onclick="switchTab('apr')"><span class="nav-icon">💰</span><span class="nav-label">APR</span></div>
-    </nav>
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showTab('porto', this)"><div class="nav-icon">📊</div><span>Porto</span></div>
+        <div class="nav-item" onclick="showTab('kurs', this)"><div class="nav-icon">💱</div><span>Kurs</span></div>
+        <div class="nav-item" onclick="showTab('apr', this)"><div class="nav-icon">💰</div><span>APR</span></div>
+    </div>
 </div>
 
 <script>
-    // --- GLOBAL STATE ---
-    let usdToIdr = parseFloat(localStorage.getItem('last_usd_idr')) || 16200;
-    let prices = {};
-    let changes = {};
-    let activeTab = 'porto';
-
-    // Porto State
-    let portoAssets = JSON.parse(localStorage.getItem('my_assets_v2') || '["BTC","ETH"]');
-    let portoBalances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
-    let portoExpanded = null;
-
-    // Kurs State
-    let kursWatchlist = JSON.parse(localStorage.getItem('kurs_fast_v3') || '["BTC","ETH"]');
-
-    // APR State
-    let aprCurrency = localStorage.getItem('apr_currency') || 'IDR';
-
-    // --- INITIALIZE ---
-    window.onload = async () => {
-        updateGlobalKurs();
-        fetchPrices();
-        loadAprData();
-        setInterval(fetchPrices, 30000);
-    };
-
-    function switchTab(t) {
-        activeTab = t;
-        document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+    let globalUsdToIdr = 16000;
+    
+    // GANTI TAB
+    function showTab(id, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('tab-' + t).classList.add('active');
-        event.currentTarget.classList.add('active');
+        document.getElementById('tab-' + id).classList.add('active');
+        el.classList.add('active');
     }
 
-    async function updateGlobalKurs() {
+    // KURS GLOBAL SYNC
+    async function fetchKurs() {
         try {
-            const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=idr');
+            const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=idr');
             const d = await r.json();
-            if(d['usd-coin']?.idr) {
-                usdToIdr = d['usd-coin'].idr;
-                localStorage.setItem('last_usd_idr', usdToIdr);
-                document.querySelectorAll('.global-kurs').forEach(el => {
-                    el.innerText = `USD/IDR: ${new Intl.NumberFormat('id-ID').format(usdToIdr)}`;
-                });
-                hitungApr();
+            if(d.tether?.idr) {
+                globalUsdToIdr = d.tether.idr;
+                document.getElementById('global-kurs-val').innerText = `USD/IDR: ${Math.round(globalUsdToIdr).toLocaleString('id-ID')}`;
+                // Update Porto & APR if they are visible
+                porto_render(); 
+                apr_hitung();
             }
         } catch(e) {}
     }
 
-    async function fetchPrices() {
-        const allSyms = [...new Set([...portoAssets, ...kursWatchlist, "BTC", "ETH"])];
-        for (let s of allSyms) {
+    // --- LOGIC PORTO ---
+    let p_watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '["BTC", "ETH"]');
+    let p_balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
+    let p_prices = {};
+    
+    async function porto_fetch() {
+        for(let s of p_watchlist) {
             try {
-                const r = await fetch(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${s.toUpperCase()}USDT`);
+                const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}USDT`);
                 const d = await r.json();
-                if(d.result?.list?.[0]) {
-                    const t = d.result.list[0];
-                    prices[s.toUpperCase()] = parseFloat(t.lastPrice);
-                    changes[s.toUpperCase()] = ((prices[s.toUpperCase()] - parseFloat(t.prevPrice24h)) / parseFloat(t.prevPrice24h)) * 100;
-                }
-            } catch(e) {}
+                if(d.price) p_prices[s] = parseFloat(d.price);
+            } catch(e){}
         }
-        renderPorto();
-        renderKurs();
+        porto_render();
     }
 
-    function handleLogoErr(img, sym) {
-        const wrapper = img.parentElement;
-        wrapper.innerHTML = `<span style="font-size:12px; font-weight:bold; color:var(--accent);">${sym.substring(0,2).toUpperCase()}</span>`;
-    }
-
-    function formatIDR(v) { return "Rp " + Math.round(v).toLocaleString('id-ID'); }
-    function formatUSD(v) { 
-        let dec = v < 1 ? 6 : 2;
-        return "$" + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: dec});
-    }
-
-    // --- PORTO LOGIC ---
-    function renderPorto() {
+    function porto_render() {
         const list = document.getElementById('porto-list');
-        const search = document.getElementById('porto-search').value.toUpperCase();
-        list.innerHTML = "";
-        let totalUsd = 0;
-
-        portoAssets.filter(s => s.includes(search)).forEach(sym => {
-            const p = prices[sym] || 0;
-            const bal = getPortoBal(sym);
-            const valUsd = bal * p;
-            totalUsd += valUsd;
-
-            list.innerHTML += `
-                <div class="porto-coin-row">
-                    <div class="porto-coin-card" onclick="togglePortoDetail('${sym}')">
-                        <div class="porto-logo"><img src="https://coinicons-api.vercel.app/api/icon/${sym.toLowerCase()}" onerror="handleLogoErr(this,'${sym}')"></div>
-                        <div style="flex:1">
-                            <span style="font-weight:bold;">${sym}</span>
-                            <span class="${changes[sym] >= 0 ? 'up':'down'}" style="font-size:10px; font-weight:bold; margin-left:5px;">${changes[sym]?.toFixed(2)}%</span><br>
-                            <span style="font-size:11px; color:var(--subtext);">${formatUSD(p)}</span>
-                        </div>
-                        <div style="text-align:right">
-                            <span style="font-weight:bold;">${bal.toLocaleString()}</span><br>
-                            <span style="font-size:10px; color:var(--subtext);">${formatIDR(valUsd * usdToIdr)}</span>
-                        </div>
-                    </div>
-                    <div id="porto-det-${sym}" class="porto-details" style="display:${portoExpanded === sym ? 'block':'none'}">
-                        ${["Binance", "Bybit", "Pintu", "Hotcoin", "Lainnya"].map(src => `
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:center;">
-                                <span style="font-size:12px; color:var(--subtext)">${src}</span>
-                                <input type="number" class="porto-input" style="width:120px; text-align:right;" value="${portoBalances[sym]?.[src] || ''}" oninput="updatePortoBal('${sym}','${src}',this.value)">
-                            </div>
-                        `).join('')}
-                        <div class="porto-delete" onclick="removePortoCoin('${sym}')">×</div>
-                    </div>
-                </div>`;
+        list.innerHTML = ""; let totalUsd = 0;
+        p_watchlist.forEach(s => {
+            let p = p_prices[s] || 0;
+            let bal = 0;
+            if(p_balances[s]) Object.values(p_balances[s]).forEach(v => bal += parseFloat(v || 0));
+            let vUsd = bal * p; totalUsd += vUsd;
+            list.innerHTML += `<div class="coin-card">
+                <div class="logo-wrapper"><img src="https://coinicons-api.vercel.app/api/icon/${s.toLowerCase()}"></div>
+                <div style="flex:1"><b>${s}</b><br><small>$${p.toLocaleString()}</small></div>
+                <div style="text-align:right"><b>${bal}</b><br><small style="color:var(--subtext)">$${vUsd.toFixed(2)}</small></div>
+            </div>`;
         });
-        document.getElementById('porto-total-idr').innerText = formatIDR(totalUsd * usdToIdr);
-        document.getElementById('porto-total-usd').innerText = formatUSD(totalUsd);
+        document.getElementById('porto-total-usd').innerText = `$${totalUsd.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+        document.getElementById('porto-total-idr').innerText = `Rp ${Math.round(totalUsd * globalUsdToIdr).toLocaleString('id-ID')}`;
     }
 
-    function getPortoBal(s) {
-        let t = 0;
-        for(let src in (portoBalances[s] || {})) t += parseFloat(portoBalances[s][src] || 0);
-        return t;
+    function porto_addCoin() {
+        let val = document.getElementById('porto-add-input').value.toUpperCase().trim();
+        if(val && !p_watchlist.includes(val)) { p_watchlist.push(val); localStorage.setItem('my_assets_v2', JSON.stringify(p_watchlist)); porto_fetch(); }
     }
 
-    function togglePortoDetail(s) { portoExpanded = (portoExpanded === s) ? null : s; renderPorto(); }
+    // --- LOGIC KURS ---
+    let k_watchlist = JSON.parse(localStorage.getItem('kurs_fast_v3') || '[]');
+    let k_prices = {};
 
-    function updatePortoBal(s, src, v) {
-        if(!portoBalances[s]) portoBalances[s] = {};
-        portoBalances[s][src] = v;
-        localStorage.setItem('my_balances_v2', JSON.stringify(portoBalances));
-        renderPorto();
-    }
-
-    function addPortoCoin() {
-        const s = document.getElementById('porto-add-sym').value.toUpperCase().trim();
-        if(s && !portoAssets.includes(s)) {
-            portoAssets.push(s);
-            localStorage.setItem('my_assets_v2', JSON.stringify(portoAssets));
-            document.getElementById('porto-add-sym').value = "";
-            fetchPrices();
+    async function kurs_fetch() {
+        for(let s of ['BTC','ETH',...k_watchlist]) {
+            try {
+                const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}USDT`);
+                const d = await r.json();
+                if(d.price) k_prices[s] = parseFloat(d.price);
+            } catch(e){}
         }
+        kurs_render();
     }
 
-    function removePortoCoin(s) {
-        if(confirm(`Hapus ${s}?`)) {
-            portoAssets = portoAssets.filter(i => i !== s);
-            localStorage.setItem('my_assets_v2', JSON.stringify(portoAssets));
-            renderPorto();
-        }
-    }
-
-    function resetData() { if(confirm("Hapus semua saldo & koin?")) { localStorage.clear(); location.reload(); } }
-    function exportData() {
-        const data = { assets: portoAssets, balances: portoBalances, kurs: kursWatchlist };
-        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `backup_minas_${new Date().getTime()}.json`;
-        a.click();
-    }
-    function importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.onchange = e => {
-            const reader = new FileReader();
-            reader.onload = ev => {
-                const d = JSON.parse(ev.target.result);
-                if(d.assets) localStorage.setItem('my_assets_v2', JSON.stringify(d.assets));
-                if(d.balances) localStorage.setItem('my_balances_v2', JSON.stringify(d.balances));
-                if(d.kurs) localStorage.setItem('kurs_fast_v3', JSON.stringify(d.kurs));
-                location.reload();
-            };
-            reader.readAsText(e.target.files[0]);
-        };
-        input.click();
-    }
-
-    // --- KURS LOGIC ---
-    function renderKurs() {
-        const list = document.getElementById('kurs-list');
-        list.innerHTML = "";
-        kursWatchlist.forEach(s => {
-            const p = prices[s] || 0;
-            const c = changes[s] || 0;
-            list.innerHTML += `
-                <div class="kurs-coin-card">
-                    <div class="porto-logo"><img src="https://coinicons-api.vercel.app/api/icon/${s.toLowerCase()}" onerror="handleLogoErr(this,'${s}')"></div>
-                    <div style="min-width:70px;"><label style="font-size:11px; color:var(--subtext); font-weight:bold;">${s}</label><br><span style="font-size:10px; color:var(--accent);">${formatUSD(p)}</span></div>
-                    <input type="text" id="kurs-val-${s.toLowerCase()}" class="porto-input" placeholder="0" oninput="handleKursCalc('${s.toLowerCase()}')">
-                    <span class="${c >= 0 ? 'up':'down'}" style="font-size:11px; font-weight:800; min-width:50px; text-align:right;">${c >= 0 ? '+':''}${c.toFixed(2)}%</span>
-                    <div onclick="removeKursCoin('${s}')" style="color:#ef4444; font-weight:bold; cursor:pointer; padding-left:10px;">×</div>
-                </div>`;
+    function kurs_render() {
+        const cont = document.getElementById('kurs-watchlist');
+        cont.innerHTML = "";
+        k_watchlist.forEach(s => {
+            let p = k_prices[s] || 0;
+            cont.innerHTML += `<div class="coin-card">
+                <div class="logo-wrapper"><img src="https://coinicons-api.vercel.app/api/icon/${s.toLowerCase()}"></div>
+                <div style="min-width:70px;"><label style="font-size:11px; font-weight:bold;">${s}</label><br><span style="font-size:10px; color:var(--accent)">$${p.toLocaleString()}</span></div>
+                <div class="input-box-kurs" style="flex:1;"><input type="text" id="k-in-${s}" inputmode="decimal" placeholder="0" oninput="kurs_handle('${s}')"></div>
+            </div><div style="height:10px"></div>`;
         });
     }
 
-    function handleKursCalc(id) {
-        let el = document.getElementById('kurs-' + (id === 'idr' || id === 'usd' ? id : 'val-'+id));
-        let val = parseFloat(el.value.replace(/,/g, '')) || 0;
-        let baseUsd = (id === 'idr') ? val / usdToIdr : (id === 'usd') ? val : val * (prices[id.toUpperCase()] || 0);
-
-        const all = ['idr', 'usd', ...kursWatchlist.map(s => s.toLowerCase())];
-        all.forEach(f => {
-            if(f !== id) {
-                let target = document.getElementById(f === 'idr' || f === 'usd' ? 'kurs-'+f : 'kurs-val-'+f);
-                if(!target) return;
-                let res = (f === 'idr') ? baseUsd * usdToIdr : (f === 'usd') ? baseUsd : baseUsd / (prices[f.toUpperCase()] || 1);
-                target.value = res.toLocaleString('en-US', {maximumFractionDigits: f === 'idr' ? 0 : (res < 1 ? 6 : 2)});
-            }
+    function kurs_handle(src) {
+        let val = parseFloat(document.getElementById(src === 'idr' ? 'kurs-idr' : (src === 'usd' ? 'kurs-usd' : 'k-in-'+src)).value.replace(/,/g,'')) || 0;
+        let usdBase = src === 'idr' ? val / globalUsdToIdr : (src === 'usd' ? val : val * (k_prices[src] || 0));
+        
+        document.getElementById('kurs-idr').value = (usdBase * globalUsdToIdr).toLocaleString('en-US', {maximumFractionDigits:0});
+        document.getElementById('kurs-usd').value = usdBase.toLocaleString('en-US', {maximumFractionDigits:2});
+        k_watchlist.forEach(s => {
+            let res = usdBase / (k_prices[s] || 1);
+            document.getElementById('k-in-'+s).value = res.toLocaleString('en-US', {maximumFractionDigits:4});
         });
     }
 
-    function addKursCoin() {
-        const s = document.getElementById('kurs-add-sym').value.toUpperCase().trim();
-        if(s && !kursWatchlist.includes(s)) {
-            kursWatchlist.push(s);
-            localStorage.setItem('kurs_fast_v3', JSON.stringify(kursWatchlist));
-            document.getElementById('kurs-add-sym').value = "";
-            fetchPrices();
-        }
+    function kurs_addCoin() {
+        let val = document.getElementById('kurs-add-input').value.toUpperCase().trim();
+        if(val && !k_watchlist.includes(val)) { k_watchlist.push(val); localStorage.setItem('kurs_fast_v3', JSON.stringify(k_watchlist)); kurs_fetch(); }
     }
 
-    function removeKursCoin(s) {
-        kursWatchlist = kursWatchlist.filter(i => i !== s);
-        localStorage.setItem('kurs_fast_v3', JSON.stringify(kursWatchlist));
-        renderKurs();
+    // --- LOGIC APR ---
+    let apr_curr = 'IDR';
+    function apr_setCurr(c) { 
+        apr_curr = c; 
+        document.getElementById('apr-btn-idr').className = c === 'IDR' ? 'active' : '';
+        document.getElementById('apr-btn-usd').className = c === 'USD' ? 'active' : '';
+        apr_hitung(); 
     }
 
-    // --- APR LOGIC ---
-    function setAprCurrency(c) {
-        aprCurrency = c;
-        localStorage.setItem('apr_currency', c);
-        document.getElementById('apr-btn-idr').style.background = c === 'IDR' ? 'var(--accent)' : 'transparent';
-        document.getElementById('apr-btn-usd').style.background = c === 'USD' ? 'var(--accent)' : 'transparent';
-        document.getElementById('apr-btn-idr').style.color = c === 'IDR' ? '#0f172a' : 'var(--subtext)';
-        document.getElementById('apr-btn-usd').style.color = c === 'USD' ? '#0f172a' : 'var(--subtext)';
-        hitungApr();
+    function apr_hitung() {
+        let saldo = parseFloat(document.getElementById('apr-saldo').value.replace(/,/g,'')) || 0;
+        let bunga = parseFloat(document.getElementById('apr-bunga').value) || 0;
+        let perThn = saldo * (bunga / 100);
+        let perBln = perThn / 12;
+        let perHari = perThn / 365;
+
+        const fmt = (v) => apr_curr === 'IDR' ? 'Rp ' + Math.floor(v).toLocaleString('id-ID') : '$ ' + v.toLocaleString(undefined, {minimumFractionDigits:2});
+        document.getElementById('apr-harian').innerText = fmt(perHari);
+        document.getElementById('apr-bulanan').innerText = fmt(perBln);
+        document.getElementById('apr-tahunan').innerText = fmt(perThn);
     }
 
-    function loadAprData() {
-        document.getElementById('apr-saldo').value = localStorage.getItem('apr_saldo') || "";
-        document.getElementById('apr-bunga').value = localStorage.getItem('apr_bunga') || "";
-        setAprCurrency(aprCurrency);
-    }
-
-    function hitungApr() {
-        let sInput = document.getElementById('apr-saldo');
-        let bInput = document.getElementById('apr-bunga');
-        localStorage.setItem('apr_saldo', sInput.value);
-        localStorage.setItem('apr_bunga', bInput.value);
-
-        let saldo = parseFloat(sInput.value.replace(/,/g, '')) || 0;
-        let bunga = parseFloat(bInput.value) || 0;
-
-        let konversi = aprCurrency === 'USD' ? saldo * usdToIdr : saldo;
-        document.getElementById('apr-cek-saldo').innerText = saldo > 0 ? formatIDR(konversi) : "";
-
-        let tahunan = saldo * (bunga / 100);
-        let p = { tahunan: tahunan, bulanan: tahunan / 12, harian: tahunan / 365 };
-
-        for(let k in p) {
-            let val = p[k];
-            if(aprCurrency === 'IDR') {
-                document.getElementById('apr-'+k).innerText = formatIDR(val);
-                document.getElementById('apr-'+k+'-sub').innerText = "";
-            } else {
-                document.getElementById('apr-'+k).innerText = formatUSD(val);
-                document.getElementById('apr-'+k+'-sub').innerText = val > 0 ? "≈ " + formatIDR(val * usdToIdr) : "";
-            }
-        }
-    }
+    // ON LOAD
+    window.onload = () => {
+        fetchKurs();
+        porto_fetch();
+        kurs_fetch();
+        setInterval(fetchKurs, 60000);
+    };
 </script>
+
 </body>
 </html>
