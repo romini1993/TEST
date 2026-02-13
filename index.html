@@ -231,6 +231,20 @@
         let totalAllUsd = 0;
         let exchangeData = {};
 
+        // Mapping logo exchange
+        const exchangeLogos = {
+            "BINANCE": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FBinance_Icon_8f86f3454b.png&w=128&q=75",
+            "BYBIT": "https://static.bybit.com/navigation/bybit-logo-white-new.png",
+            "OKX": "https://www.okx.com/cdn-deploy/static/img/2021/01/OKX-Logo.png",
+            "GATE": "https://www.gate.io/images/logo/logo.png",
+            "TOKOCRYPTO": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FTokocrypto_Icon_6f7f89767c.png&w=128&q=75",
+            "INDODAX": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FIndodax_Icon_e490793b8d.png&w=128&q=75",
+            "PINTU": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FPintu_Icon_7e0c460d3d.png&w=128&q=75",
+            "MEXC": "https://www.mexc.com/favicon.ico",
+            "KUCOIN": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FKu_Coin_Icon_9b8374a49c.png&w=128&q=75",
+            "BITMART": "https://www.bitmart.com/favicon.ico"
+        };
+
         allExchanges.forEach(ex => {
             exchangeData[ex] = { name: ex, coins: [], totalValue: 0 };
         });
@@ -248,7 +262,6 @@
             });
         });
 
-        // Smart Search: Cek nama exchange ATAU apakah exchange tersebut punya koin yang dicari
         let exchangeArray = Object.values(exchangeData).filter(ex => {
             const matchExchange = ex.name.toUpperCase().includes(query);
             const matchCoin = ex.coins.some(c => c.sym.toUpperCase().includes(query));
@@ -263,11 +276,18 @@
                 ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}`
                 : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
+            // Logika Pilih Logo Exchange
+            const exKey = ex.name.toUpperCase();
+            let logoHtml = `<div class="logo-initial">${ex.name.substring(0,2)}</div>`;
+            if(exchangeLogos[exKey]) {
+                logoHtml = `<img src="${exchangeLogos[exKey]}" alt="${ex.name}" style="width:100%; height:100%; object-fit:contain; background:#fff; padding:2px;">`;
+            }
+
             list.innerHTML += `
                 <div class="coin-row">
                     <div class="coin-card" onclick="toggleDetail('${ex.name}')">
                         <div class="logo-wrapper">
-                            <div class="logo-initial">${ex.name.substring(0,2)}</div>
+                            ${logoHtml}
                         </div>
                         <div class="info-group">
                             <span class="symbol">${ex.name}</span><br>
