@@ -34,19 +34,15 @@
 
         .info-group { flex: 1; min-width: 0; }
         .symbol { font-size: 15px; font-weight: bold; }
-        .change-pct { font-size: 10px; font-weight: bold; margin-left: 5px; }
         .up { color: var(--up); }
         .down { color: var(--down); }
         .delete-coin { position: absolute; right: -25px; top: 50%; transform: translateY(-50%); color: var(--down); font-size: 20px; cursor: pointer; padding: 10px; }
         
         .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 20px 15px 15px 15px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
         .source-row { display: flex; align-items: center; margin-bottom: 10px; gap: 8px; }
-        .source-label { font-size: 12px; color: var(--subtext); width: 80px; flex-shrink: 0; cursor: pointer; }
         .source-input { flex: 1; background: #000; border: 1px solid #475569; color: #fff; text-align: left; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; }
-        .edit-src { color: var(--accent); font-size: 14px; cursor: pointer; margin-left: 4px; }
         .del-src { color: var(--down); font-size: 18px; cursor: pointer; margin-left: 8px; }
         
-        /* Modifikasi box tambah koin biar sama kaya tambah source */
         .new-source-box { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155; }
         .new-source-input { flex: 1; background: var(--card); border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; font-size: 13px; }
         .new-source-btn { background: var(--accent); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; color: #0f172a; }
@@ -56,7 +52,6 @@
         .search-box input { flex: 1; background: var(--card); border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; }
         .add-btn { background: var(--accent); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; color: #0f172a; }
         
-        /* Layout Tombol 2-2-1 */
         .backup-section { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         .backup-btn { flex: 1 1 calc(50% - 4px); background: transparent; border: 1px solid #334155; color: var(--subtext); padding: 10px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: center; }
         .import-btn-full { flex: 1 1 100% !important; margin-top: 4px; border: 1px solid var(--accent) !important; color: var(--accent) !important; }
@@ -124,7 +119,6 @@
     let prices = {};
     let changes = {};
     let coinMapCG = {};
-    const defaultSources = ["Binance", "Bybit", "OKX"];
     let watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '["BTC", "ETH"]');
     let balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
     let coinSources = JSON.parse(localStorage.getItem('my_coin_sources') || '{}');
@@ -137,8 +131,7 @@
         const lastCur = localStorage.getItem('last_cur') || 'IDR';
         document.getElementById('sort-order').value = lastSort;
         document.getElementById('currency-view').value = lastCur;
-
-        watchlist.forEach(s => { if(!coinSources[s]) coinSources[s] = [...allExchanges]; });
+        watchlist.forEach(s => { if(!coinSources[s]) coinSources[s] = []; });
         renderList(); 
         fetchKurs(); 
         fetchCoinMap(); 
@@ -210,16 +203,9 @@
     }
 
     function handleLogoError(img, sym) {
-        const retry = parseInt(img.getAttribute('data-retry') || "0");
-        const sources = [`https://assets.coincap.io/assets/icons/${sym.toLowerCase()}@2x.png`, `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${sym.toLowerCase()}.png` ];
-        if (retry < sources.length) {
-            img.setAttribute('data-retry', retry + 1);
-            img.src = sources[retry];
-        } else {
-            const initial = sym.substring(0, 2);
-            const container = img.parentElement;
-            if (container) { container.innerHTML = `<div class="logo-initial">${initial}</div>`; }
-        }
+        const initial = sym.substring(0, 2);
+        const container = img.parentElement;
+        if (container) { container.innerHTML = `<div class="logo-initial">${initial}</div>`; }
     }
 
     function renderList() {
@@ -259,37 +245,33 @@
         else if (sortType === 'value') exchangeArray.sort((a, b) => b.totalValue - a.totalValue);
 
         exchangeArray.forEach(ex => {
-            const valueDisplay = (currencyView === 'IDR') 
+            const valDis = (currencyView === 'IDR') 
                 ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}`
                 : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
             list.innerHTML += `
                 <div class="coin-row">
                     <div class="coin-card" onclick="toggleDetail('${ex.name}')">
-                        <div class="logo-wrapper">
-                            <div class="logo-initial">${ex.name.substring(0,2)}</div>
-                        </div>
+                        <div class="logo-wrapper"><div class="logo-initial">${ex.name.substring(0,2)}</div></div>
                         <div class="info-group">
                             <span class="symbol">${ex.name}</span><br>
                             <span style="font-size:11px; color:var(--subtext)">${ex.coins.length} Aset</span>
                         </div>
-                        <div style="text-align:right; margin-right: 10px;">
-                            <span style="font-weight:bold; font-size:15px;">${valueDisplay}</span>
-                        </div>
+                        <div style="text-align:right; margin-right:10px;"><span style="font-weight:bold; font-size:15px;">${valDis}</span></div>
                     </div>
                     <span class="delete-coin" onclick="removeExchange('${ex.name}')">×</span>
                     <div id="det-${ex.name}" class="details" style="display:${expandedExchange===ex.name?'block':'none'}">
                         ${ex.coins.map(c => `
-                            <div class="source-row" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; align-items: center; gap: 8px;">
-                                <div class="logo-wrapper" style="width:28px; height:28px; flex-shrink: 0;">
+                            <div class="source-row">
+                                <div class="logo-wrapper" style="width:28px; height:28px;">
                                     <img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')">
                                 </div>
                                 <div style="width: 50px; flex-shrink: 0;">
                                     <div style="font-size:13px; font-weight:bold">${c.sym}</div>
-                                    <div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size: 10px;">${c.change}%</div>
+                                    <div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size:10px;">${c.change}%</div>
                                 </div>
-                                <input type="number" class="source-input" style="flex: 1; min-width: 0;" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
-                                <span class="del-src" style="flex-shrink: 0;" onclick="removeCoinFromExchange('${c.sym}', '${exName}')">×</span>
+                                <input type="number" class="source-input" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
+                                <span class="del-src" onclick="removeCoinFromExchange('${c.sym}', '${ex.name}')">×</span>
                             </div>
                         `).join('')}
                         <div class="new-source-box">
@@ -307,13 +289,8 @@
     function addNewExchange() {
         const input = document.getElementById('source-input-global');
         const name = input.value.trim();
-        if(name) {
-            if(!allExchanges.includes(name)) {
-                allExchanges.push(name);
-                saveAll(); input.value = ""; renderList();
-            } else {
-                showToast("Source ini udah ada, Bro!");
-            }
+        if(name && !allExchanges.includes(name)) {
+            allExchanges.push(name); saveAll(); input.value = ""; renderList();
         }
     }
 
@@ -324,16 +301,13 @@
             if(!watchlist.includes(sym)) watchlist.push(sym);
             if(!coinSources[sym]) coinSources[sym] = [];
             if(!coinSources[sym].includes(exName)) {
-                coinSources[sym].push(exName);
-                saveAll(); input.value = ""; fetchAll();
-            } else {
-                showToast("Koin ini udah ada di exchange ini, Bro!");
+                coinSources[sym].push(exName); saveAll(); input.value = ""; fetchAll();
             }
         }
     }
 
     function removeExchange(exName) {
-        if(confirm(`Hapus exchange ${exName} dan semua saldo di dalamnya?`)) {
+        if(confirm(`Hapus exchange ${exName}?`)) {
             allExchanges = allExchanges.filter(e => e !== exName);
             watchlist.forEach(sym => {
                 if(coinSources[sym]) coinSources[sym] = coinSources[sym].filter(s => s !== exName);
@@ -351,19 +325,22 @@
         }
     }
 
-    function getCoinTotal(sym) { let t = 0; (coinSources[sym] || []).forEach(src => t += parseFloat(balances[sym]?.[src] || 0)); return t; }
     function toggleDetail(exName) { expandedExchange = (expandedExchange === exName) ? null : exName; renderList(); }
     function updateBal(s, src, v) { if(!balances[s]) balances[s]={}; balances[s][src] = v; saveAll(); updateSummary(); }
     
     function showToast(msg) {
         const x = document.getElementById("toast-msg");
-        x.innerText = msg;
-        x.className = "show";
-        setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
+        x.innerText = msg; x.className = "show";
+        setTimeout(() => { x.className = ""; }, 3000);
     }
 
     function updateSummary() {
-        let total = 0; watchlist.forEach(s => total += (getCoinTotal(s) * (prices[s] || 0)));
+        let total = 0; 
+        watchlist.forEach(s => {
+            let sBal = 0;
+            (coinSources[s] || []).forEach(src => sBal += parseFloat(balances[s]?.[src] || 0));
+            total += (sBal * (prices[s] || 0));
+        });
         document.getElementById('total-all-idr').innerText = `Rp ${Math.round(total*usdToIdr).toLocaleString('id-ID')}`;
         document.getElementById('total-all-usd').innerText = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
     }
@@ -378,23 +355,13 @@
     function resetApp() { if(confirm("Hapus total semua data?")) { localStorage.clear(); location.reload(); } }
     
     function exportData() {
-        const now = new Date();
-        const dateStr = now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0');
-        const timeStr = String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0') + String(now.getSeconds()).padStart(2,'0');
-        const defaultName = `PORTO_${dateStr}_${timeStr}`;
-        const fileName = prompt("Beri nama file backup:", defaultName);
-        if (fileName) {
-            const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
-            const a = document.createElement('a'); 
-            a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-            a.download = `${fileName}.json`; a.click();
-        }
+        const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
+        const a = document.createElement('a'); 
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
+        a.download = `PORTO_BACKUP.json`; a.click();
     }
 
-    function openFilePicker(mode) {
-        currentMode = mode;
-        document.getElementById('importFile').click();
-    }
+    function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').click(); }
 
     function handleFileSelect(e) {
         const file = e.target.files[0];
@@ -404,62 +371,28 @@
             try {
                 const d = JSON.parse(f.target.result);
                 if (currentMode === 'restore') {
-                    if(confirm("Restore akan menghapus data saat ini. Lanjutkan?")) {
-                        watchlist = d.assets || [];
-                        balances = d.balances || {};
-                        coinSources = d.sources || {};
-                        allExchanges = d.exchanges || ["Binance", "Bybit", "OKX"];
-                        saveAll();
-                        location.reload();
-                    }
-                } else if (currentMode === 'import') {
-                    if (d.exchanges) {
-                        d.exchanges.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
-                    }
-                    if (d.assets) {
-                        d.assets.forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
-                    }
-                    if (d.sources) {
-                        for (let s in d.sources) {
-                            if (!coinSources[s]) coinSources[s] = d.sources[s];
-                            else d.sources[s].forEach(src => { if(!coinSources[s].includes(src)) coinSources[s].push(src); });
-                        }
-                    }
-                    if (d.balances) {
-                        for (let s in d.balances) {
-                            if (!balances[s]) balances[s] = {};
-                            for (let src in d.balances[s]) {
-                                let bVal = parseFloat(d.balances[s][src] || 0);
-                                let cVal = parseFloat(balances[s][src] || 0);
-                                balances[s][src] = cVal + bVal;
-                            }
-                        }
-                    }
-                    saveAll();
-                    showToast("Data berhasil ditambahkan!");
-                    setTimeout(() => location.reload(), 1000);
+                    watchlist = d.assets; balances = d.balances; coinSources = d.sources; allExchanges = d.exchanges;
+                } else {
+                    d.exchanges?.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
+                    d.assets?.forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
                 }
-            } catch (err) { showToast("File gak valid, Bro!"); }
-            e.target.value = '';
+                saveAll(); location.reload();
+            } catch (err) { alert("File error"); }
         };
         reader.readAsText(file);
     }
 
     function exportToExcel() {
-        let csv = "sep=,\nExchange,Koin,Saldo,Harga USD,Total USD,Total IDR\n";
+        let csv = "sep=,\nExchange,Koin,Saldo,Harga USD,Total USD\n";
         allExchanges.forEach(ex => {
             watchlist.forEach(s => {
                 if(coinSources[s]?.includes(ex)) {
                     const bal = parseFloat(balances[s]?.[ex] || 0);
-                    if(bal > 0) {
-                        const price = prices[s]||0;
-                        const valUsd = bal * price;
-                        csv += `${ex},${s},${bal},${price},${valUsd.toFixed(2)},${Math.round(valUsd * usdToIdr)}\n`;
-                    }
+                    if(bal > 0) csv += `${ex},${s},${bal},${prices[s]||0},${(bal*(prices[s]||0)).toFixed(2)}\n`;
                 }
             });
         });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = "Laporan_Aset.csv"; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = "PORTO.csv"; a.click();
     }
 </script>
 </body>
