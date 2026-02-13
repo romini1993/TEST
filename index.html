@@ -46,9 +46,10 @@
         .edit-src { color: var(--accent); font-size: 14px; cursor: pointer; margin-left: 4px; }
         .del-src { color: var(--down); font-size: 18px; cursor: pointer; margin-left: 8px; }
         
-        .new-source-box { display: flex; gap: 5px; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .new-source-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px dashed #475569; color: #fff; border-radius: 6px; padding: 6px 10px; font-size: 11px; outline: none; }
-        .new-source-btn { background: #334155; color: var(--accent); border: none; border-radius: 6px; padding: 0 12px; font-weight: bold; cursor: pointer; }
+        /* Modifikasi box tambah koin biar sama kaya tambah source */
+        .new-source-box { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155; }
+        .new-source-input { flex: 1; background: var(--card); border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; font-size: 13px; }
+        .new-source-btn { background: var(--accent); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; color: #0f172a; }
 
         .add-section { margin-top: 40px; padding-top: 20px; border-top: 1px dashed #334155; }
         .search-box { display: flex; gap: 8px; margin-bottom: 20px; }
@@ -248,7 +249,6 @@
             });
         });
 
-        // Smart Search: Cek nama exchange ATAU apakah exchange tersebut punya koin yang dicari
         let exchangeArray = Object.values(exchangeData).filter(ex => {
             const matchExchange = ex.name.toUpperCase().includes(query);
             const matchCoin = ex.coins.some(c => c.sym.toUpperCase().includes(query));
@@ -289,12 +289,12 @@
                                     <div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size: 10px;">${c.change}%</div>
                                 </div>
                                 <input type="number" class="source-input" style="flex: 1; min-width: 0;" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
-                                <span class="del-src" style="flex-shrink: 0;" onclick="removeCoinFromExchange('${c.sym}', '${ex.name}')">×</span>
+                                <span class="del-src" style="flex-shrink: 0;" onclick="removeCoinFromExchange('${c.sym}', '${exName}')">×</span>
                             </div>
                         `).join('')}
                         <div class="new-source-box">
                             <input type="text" id="add-coin-to-${ex.name}" class="new-source-input" placeholder="Tambah koin (misal: SUI)">
-                            <button class="new-source-btn" onclick="addCoinToExchange('${ex.name}')">+</button>
+                            <button class="new-source-btn" onclick="addCoinToExchange('${ex.name}')">Tambah</button>
                         </div>
                     </div>
                 </div>`;
