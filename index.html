@@ -55,9 +55,11 @@
         .search-box input { flex: 1; background: var(--card); border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; }
         .add-btn { background: var(--accent); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; color: #0f172a; }
         
-        /* FIX: Ubah grid biar tombol gak berantakan */
-        .backup-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 20px; }
-        .backup-btn { background: transparent; border: 1px solid #334155; color: var(--subtext); padding: 10px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: center; }
+        /* Layout Tombol 2-2-1 */
+        .backup-section { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .backup-btn { flex: 1 1 calc(50% - 4px); background: transparent; border: 1px solid #334155; color: var(--subtext); padding: 10px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: center; }
+        .import-btn-full { flex: 1 1 100% !important; margin-top: 4px; border: 1px solid var(--accent) !important; color: var(--accent) !important; }
+        
         .last-updated { text-align: center; font-size: 10px; color: var(--subtext); margin-top: 20px; }
 
         #toast-msg { visibility: hidden; min-width: 200px; background-color: #f87171; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 1000; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
@@ -104,10 +106,11 @@
         </div>
         <div class="backup-section">
             <button class="backup-btn" onclick="exportData()">📤 Backup</button>
-            <button class="backup-btn" onclick="exportToExcel()">📊 Excel</button>
             <button class="backup-btn" onclick="openFilePicker('restore')">🔄 Restore</button>
-            <button class="backup-btn" onclick="openFilePicker('import')">📥 Import</button>
+            <button class="backup-btn" onclick="exportToExcel()">📊 Excel</button>
             <button class="backup-btn" onclick="resetApp()" style="color:var(--down)">⚠️ Reset</button>
+            <button class="backup-btn import-btn-full" onclick="openFilePicker('import')">📥 Import</button>
+            
             <input type="file" id="importFile" style="display:none" accept=".json" onchange="handleFileSelect(event)">
         </div>
         <div id="last-updated" class="last-updated">Update: ---</div>
