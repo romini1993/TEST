@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f172a">
-    <link rel="manifest" href="manifest.json">
     
     <title>PORTO</title>
     
@@ -39,10 +38,13 @@
         .delete-coin { position: absolute; right: -25px; top: 50%; transform: translateY(-50%); color: var(--down); font-size: 20px; cursor: pointer; padding: 10px; }
         
         .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 20px 15px 15px 15px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
-        .source-row { display: flex; align-items: center; margin-bottom: 10px; gap: 8px; }
-        .source-input { flex: 1; background: #000; border: 1px solid #475569; color: #fff; text-align: left; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; }
-        .del-src { color: var(--down); font-size: 18px; cursor: pointer; margin-left: 8px; }
         
+        /* Baris koin dibikin satu baris lurus */
+        .source-row { display: flex; align-items: center; margin-bottom: 12px; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px; }
+        .source-input { flex: 1; background: #000; border: 1px solid #475569; color: #fff; text-align: left; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; min-width: 0; }
+        .del-src { color: var(--down); font-size: 18px; cursor: pointer; padding: 0 5px; }
+        
+        /* Box tambah koin dibikin sama kaya tambah source */
         .new-source-box { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155; }
         .new-source-input { flex: 1; background: var(--card); border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; font-size: 13px; }
         .new-source-btn { background: var(--accent); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; color: #0f172a; }
@@ -57,11 +59,8 @@
         .import-btn-full { flex: 1 1 100% !important; margin-top: 4px; border: 1px solid var(--accent) !important; color: var(--accent) !important; }
         
         .last-updated { text-align: center; font-size: 10px; color: var(--subtext); margin-top: 20px; }
-
-        #toast-msg { visibility: hidden; min-width: 200px; background-color: #f87171; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 1000; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        #toast-msg.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        #toast-msg { visibility: hidden; min-width: 200px; background-color: #f87171; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 1000; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; }
+        #toast-msg.show { visibility: visible; }
     </style>
 </head>
 <body>
@@ -131,6 +130,7 @@
         const lastCur = localStorage.getItem('last_cur') || 'IDR';
         document.getElementById('sort-order').value = lastSort;
         document.getElementById('currency-view').value = lastCur;
+        
         watchlist.forEach(s => { if(!coinSources[s]) coinSources[s] = []; });
         renderList(); 
         fetchKurs(); 
@@ -249,6 +249,20 @@
                 ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}`
                 : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
+            let detailHtml = ex.coins.map(c => `
+                <div class="source-row">
+                    <div class="logo-wrapper" style="width:28px; height:28px;">
+                        <img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')">
+                    </div>
+                    <div style="width: 50px; flex-shrink: 0;">
+                        <div style="font-size:13px; font-weight:bold">${c.sym}</div>
+                        <div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size:10px;">${c.change}%</div>
+                    </div>
+                    <input type="number" class="source-input" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
+                    <span class="del-src" onclick="removeCoinFromExchange('${c.sym}', '${ex.name}')">×</span>
+                </div>
+            `).join('');
+
             list.innerHTML += `
                 <div class="coin-row">
                     <div class="coin-card" onclick="toggleDetail('${ex.name}')">
@@ -261,19 +275,7 @@
                     </div>
                     <span class="delete-coin" onclick="removeExchange('${ex.name}')">×</span>
                     <div id="det-${ex.name}" class="details" style="display:${expandedExchange===ex.name?'block':'none'}">
-                        ${ex.coins.map(c => `
-                            <div class="source-row">
-                                <div class="logo-wrapper" style="width:28px; height:28px;">
-                                    <img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')">
-                                </div>
-                                <div style="width: 50px; flex-shrink: 0;">
-                                    <div style="font-size:13px; font-weight:bold">${c.sym}</div>
-                                    <div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size:10px;">${c.change}%</div>
-                                </div>
-                                <input type="number" class="source-input" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
-                                <span class="del-src" onclick="removeCoinFromExchange('${c.sym}', '${ex.name}')">×</span>
-                            </div>
-                        `).join('')}
+                        ${detailHtml}
                         <div class="new-source-box">
                             <input type="text" id="add-coin-to-${ex.name}" class="new-source-input" placeholder="Tambah koin (misal: SUI)">
                             <button class="new-source-btn" onclick="addCoinToExchange('${ex.name}')">Tambah</button>
@@ -326,14 +328,14 @@
     }
 
     function toggleDetail(exName) { expandedExchange = (expandedExchange === exName) ? null : exName; renderList(); }
-    function updateBal(s, src, v) { if(!balances[s]) balances[s]={}; balances[s][src] = v; saveAll(); updateSummary(); }
     
-    function showToast(msg) {
-        const x = document.getElementById("toast-msg");
-        x.innerText = msg; x.className = "show";
-        setTimeout(() => { x.className = ""; }, 3000);
+    function updateBal(s, src, v) { 
+        if(!balances[s]) balances[s]={}; 
+        balances[s][src] = v; 
+        saveAll(); 
+        updateSummary(); 
     }
-
+    
     function updateSummary() {
         let total = 0; 
         watchlist.forEach(s => {
@@ -356,9 +358,7 @@
     
     function exportData() {
         const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
-        const a = document.createElement('a'); 
-        a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-        a.download = `PORTO_BACKUP.json`; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'})); a.download = `PORTO_BACKUP.json`; a.click();
     }
 
     function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').click(); }
@@ -371,7 +371,7 @@
             try {
                 const d = JSON.parse(f.target.result);
                 if (currentMode === 'restore') {
-                    watchlist = d.assets; balances = d.balances; coinSources = d.sources; allExchanges = d.exchanges;
+                    watchlist = d.assets || []; balances = d.balances || {}; coinSources = d.sources || {}; allExchanges = d.exchanges || [];
                 } else {
                     d.exchanges?.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
                     d.assets?.forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
