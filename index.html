@@ -82,7 +82,7 @@
     </div>
 
     <div class="search-container">
-        <input type="text" id="filter-input" class="filter-input" placeholder="Cari koin di list..." oninput="renderList()">
+        <input type="text" id="filter-input" class="filter-input" placeholder="Cari exchange/source..." oninput="renderList()">
     </div>
 
     <div class="control-row">
@@ -127,7 +127,7 @@
     let watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '["BTC", "ETH"]');
     let balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
     let coinSources = JSON.parse(localStorage.getItem('my_coin_sources') || '{}');
-    let expandedCoin = null;
+    let expandedExchange = null;
     let currentMode = 'restore';
 
     window.onload = () => {
@@ -226,61 +226,73 @@
         const sortType = document.getElementById('sort-order').value;
         const currencyView = document.getElementById('currency-view').value;
         list.innerHTML = "";
+        
         let totalAllUsd = 0;
+        let exchangeData = {};
 
-        let filtered = watchlist.filter(s => s.includes(query));
-        if (sortType === 'name') filtered.sort((a, b) => a.localeCompare(b));
-        else if (sortType === 'value') filtered.sort((a, b) => (getCoinTotal(b)*(prices[b]||0)) - (getCoinTotal(a)*(prices[a]||0)));
+        // Group data by Exchange
+        watchlist.forEach(sym => {
+            (coinSources[sym] || []).forEach(src => {
+                if(!exchangeData[src]) exchangeData[src] = { name: src, coins: [], totalValue: 0 };
+                const bal = parseFloat(balances[sym]?.[src] || 0);
+                const price = prices[sym] || 0;
+                const value = bal * price;
+                exchangeData[src].coins.push({ sym, bal, price, value, change: changes[sym] || "0.00" });
+                exchangeData[src].totalValue += value;
+                totalAllUsd += value;
+            });
+        });
 
-        filtered.forEach(sym => {
-            const price = prices[sym] || 0;
-            const change = changes[sym] || "0.00";
-            const coinTotal = getCoinTotal(sym);
-            const valUsd = coinTotal * price;
-            totalAllUsd += valUsd;
+        let exchangeArray = Object.values(exchangeData).filter(ex => ex.name.toUpperCase().includes(query));
 
+        if (sortType === 'name') exchangeArray.sort((a, b) => a.name.localeCompare(b.name));
+        else if (sortType === 'value') exchangeArray.sort((a, b) => b.totalValue - a.totalValue);
+
+        exchangeArray.forEach(ex => {
             const valueDisplay = (currencyView === 'IDR') 
-                ? `Rp ${(valUsd * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}`
-                : `$${valUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}`
+                : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
             list.innerHTML += `
                 <div class="coin-row">
-                    <div class="coin-card" onclick="toggleDetail('${sym}')">
+                    <div class="coin-card" onclick="toggleDetail('${ex.name}')">
                         <div class="logo-wrapper">
-                            <img src="https://coinicons-api.vercel.app/api/icon/${sym.toLowerCase()}" onerror="handleLogoError(this, '${sym}')">
+                            <div class="logo-initial">${ex.name.substring(0,2)}</div>
                         </div>
                         <div class="info-group">
-                            <span class="symbol">${sym}</span>
-                            <span class="change-pct ${parseFloat(change) >= 0 ? 'up' : 'down'}">${parseFloat(change) >= 0 ? '+' : ''}${change}%</span><br>
-                            <span style="font-size:11px; color:var(--subtext)">$${price.toLocaleString(undefined, {minimumFractionDigits: price < 1 ? 4 : 2})}</span>
+                            <span class="symbol">${ex.name}</span><br>
+                            <span style="font-size:11px; color:var(--subtext)">${ex.coins.length} Aset</span>
                         </div>
                         <div style="text-align:right; margin-right: 10px;">
-                            <span style="font-weight:bold; font-size:15px;">${coinTotal.toLocaleString()}</span><br>
-                            <span style="font-size:10px; color:var(--subtext)">${valueDisplay}</span>
+                            <span style="font-weight:bold; font-size:15px;">${valueDisplay}</span>
                         </div>
                     </div>
-                    <span class="delete-coin" onclick="removeCoin('${sym}')">×</span>
-                    <div id="det-${sym}" class="details" style="display:${expandedCoin===sym?'block':'none'}">
-                        ${(coinSources[sym]||[]).map(src => `
-                            <div class="source-row">
-                                <span class="source-label" onclick="renameSource('${sym}', '${src}')">${src} <span class="edit-src">✎</span></span>
-                                <input type="number" class="source-input" inputmode="decimal" value="${balances[sym]?.[src]||''}" oninput="updateBal('${sym}','${src}',this.value)" placeholder="0">
-                                <span class="del-src" onclick="removeSource('${sym}', '${src}')">×</span>
+                    <div id="det-${ex.name}" class="details" style="display:${expandedExchange===ex.name?'block':'none'}">
+                        ${ex.coins.map(c => `
+                            <div class="source-row" style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px;">
+                                <div class="logo-wrapper" style="width:24px; height:24px;">
+                                    <img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')">
+                                </div>
+                                <div style="flex:1">
+                                    <div style="display:flex; justify-content:space-between; align-items:center">
+                                        <span style="font-size:13px; font-weight:bold">${c.sym} <small class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}">${c.change}%</small></span>
+                                        <span style="font-size:12px">${c.bal.toLocaleString()}</span>
+                                    </div>
+                                    <input type="number" class="source-input" style="width:100%; margin-top:5px" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
+                                </div>
+                                <span class="del-src" onclick="removeSource('${c.sym}', '${ex.name}')">×</span>
                             </div>
                         `).join('')}
-                        <div class="new-source-box">
-                            <input type="text" id="new-src-input-${sym}" class="new-source-input" placeholder="Nama source baru..." onkeypress="if(event.key==='Enter') addCustomSource('${sym}')">
-                            <button class="new-source-btn" onclick="addCustomSource('${sym}')">+</button>
-                        </div>
                     </div>
                 </div>`;
         });
+
         document.getElementById('total-all-idr').innerText = `Rp ${Math.round(totalAllUsd*usdToIdr).toLocaleString('id-ID')}`;
         document.getElementById('total-all-usd').innerText = `$${totalAllUsd.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
     }
 
     function getCoinTotal(sym) { let t = 0; (coinSources[sym] || []).forEach(src => t += parseFloat(balances[sym]?.[src] || 0)); return t; }
-    function toggleDetail(s) { expandedCoin = (expandedCoin === s) ? null : s; renderList(); }
+    function toggleDetail(exName) { expandedExchange = (expandedExchange === exName) ? null : exName; renderList(); }
     function updateBal(s, src, v) { if(!balances[s]) balances[s]={}; balances[s][src] = v; saveAll(); updateSummary(); }
     
     function renameSource(sym, oldSrc) {
@@ -432,7 +444,7 @@
         });
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = "Laporan_Aset.csv"; a.click();
     }
-    function removeSource(sym, src) { if(confirm(`Hapus source ${src}?`)) { coinSources[sym] = coinSources[sym].filter(s => s !== src); if(balances[sym]) delete balances[sym][src]; saveAll(); renderList(); } }
+    function removeSource(sym, src) { if(confirm(`Hapus koin ${sym} dari exchange ${src}?`)) { coinSources[sym] = coinSources[sym].filter(s => s !== src); if(balances[sym]) delete balances[sym][src]; saveAll(); renderList(); } }
 </script>
 </body>
 </html>
