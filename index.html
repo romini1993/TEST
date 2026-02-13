@@ -39,7 +39,6 @@
         
         .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 20px 15px 15px 15px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
         
-        /* Baris koin di dalam expand */
         .source-row { display: flex; align-items: center; margin-bottom: 12px; gap: 8px; width: 100%; }
         .coin-mini-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
         .coin-ticker-box { display: flex; flex-direction: column; min-width: 50px; }
@@ -118,10 +117,13 @@
     let usdToIdr = 16000;
     let prices = {};
     let changes = {};
+    
+    // Inisialisasi Data dari LocalStorage
     let watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '[]');
     let balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
     let coinSources = JSON.parse(localStorage.getItem('my_coin_sources') || '{}');
     let allExchanges = JSON.parse(localStorage.getItem('my_exchanges_v2') || '["Binance", "Bybit", "OKX"]');
+    
     let expandedExchange = null;
     let currentMode = 'restore';
 
@@ -130,7 +132,7 @@
         const lastCur = localStorage.getItem('last_cur') || 'IDR';
         document.getElementById('sort-order').value = lastSort;
         document.getElementById('currency-view').value = lastCur;
-        renderList(); 
+        
         fetchKurs(); 
         fetchAll();
         setInterval(fetchAll, 60000);
@@ -155,7 +157,7 @@
     }
 
     async function fetchAll() {
-        if (watchlist.length === 0) return;
+        if (watchlist.length === 0) { renderList(); return; }
         const fetchPromises = watchlist.map(async (s) => {
             try {
                 if(['USDT','USDC','USD','BUSD'].includes(s)) { prices[s] = 1; changes[s] = "0.00"; return; }
@@ -165,6 +167,13 @@
                     prices[s] = parseFloat(db.result.list[0].lastPrice);
                     let prev = parseFloat(db.result.list[0].prevPrice24h);
                     changes[s] = (prev > 0) ? (((prices[s] - prev) / prev) * 100).toFixed(2) : "0.00";
+                } else {
+                    const rs = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${s}USDT`);
+                    const ds = await rs.json();
+                    if(ds.lastPrice) {
+                        prices[s] = parseFloat(ds.lastPrice);
+                        changes[s] = parseFloat(ds.priceChangePercent).toFixed(2);
+                    }
                 }
             } catch(e) {}
         });
@@ -175,9 +184,7 @@
 
     function handleImgError(img, sym) {
         const wrapper = img.parentElement;
-        if(wrapper) {
-            wrapper.innerHTML = `<div class="logo-initial">${sym.substring(0,2)}</div>`;
-        }
+        if(wrapper) wrapper.innerHTML = `<div class="logo-initial">${sym.substring(0,2)}</div>`;
     }
 
     function renderList() {
@@ -195,7 +202,8 @@
         });
 
         watchlist.forEach(sym => {
-            (coinSources[sym] || []).forEach(src => {
+            const sources = coinSources[sym] || [];
+            sources.forEach(src => {
                 if(exchangeData[src]) {
                     const bal = parseFloat(balances[sym]?.[src] || 0);
                     const price = prices[sym] || 0;
@@ -217,7 +225,7 @@
         else if (sortType === 'value') exchangeArray.sort((a, b) => b.totalValue - a.totalValue);
 
         exchangeArray.forEach(ex => {
-            const val = (currencyView === 'IDR') 
+            const valStr = (currencyView === 'IDR') 
                 ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}`
                 : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
@@ -232,7 +240,7 @@
                             <span style="font-size:11px; color:var(--subtext)">${ex.coins.length} Aset</span>
                         </div>
                         <div style="text-align:right; margin-right: 10px;">
-                            <span style="font-weight:bold; font-size:15px;">${val}</span>
+                            <span style="font-weight:bold; font-size:15px;">${valStr}</span>
                         </div>
                     </div>
                     <span class="delete-coin" onclick="removeExchange('${ex.name}')">×</span>
@@ -241,7 +249,7 @@
                             <div class="source-row">
                                 <div class="coin-mini-info">
                                     <div class="logo-wrapper" style="width:24px; height:24px; border:none">
-                                        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${c.sym.toLowerCase()}.png" onerror="handleImgError(this, '${c.sym}')">
+                                        <img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleImgError(this, '${c.sym}')">
                                     </div>
                                     <div class="coin-ticker-box">
                                         <span style="font-size:13px; font-weight:bold; line-height:1">${c.sym}</span>
@@ -316,7 +324,7 @@
         document.getElementById('total-all-usd').innerText = `$${t.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
     }
 
-    function resetApp() { if(confirm("Reset semua?")) { localStorage.clear(); location.reload(); } }
+    function resetApp() { if(confirm("Reset semua data?")) { localStorage.clear(); location.reload(); } }
     
     function exportData() {
         const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
@@ -325,6 +333,7 @@
     }
 
     function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').click(); }
+    
     function handleFileSelect(e) {
         const file = e.target.files[0];
         if(!file) return;
@@ -333,14 +342,15 @@
             try {
                 const d = JSON.parse(f.target.result);
                 if (currentMode === 'restore') {
-                    watchlist = d.assets || [];
-                    balances = d.balances || {};
-                    coinSources = d.sources || {};
-                    allExchanges = d.exchanges || [];
-                    saveAll();
-                    setTimeout(() => location.reload(), 300);
+                    // Simpan paksa ke localStorage
+                    localStorage.setItem('my_assets_v2', JSON.stringify(d.assets || []));
+                    localStorage.setItem('my_balances_v2', JSON.stringify(d.balances || {}));
+                    localStorage.setItem('my_coin_sources', JSON.stringify(d.sources || {}));
+                    localStorage.setItem('my_exchanges_v2', JSON.stringify(d.exchanges || []));
+                    alert("Restore Berhasil! Klik OK buat refresh.");
+                    location.reload(); 
                 } else {
-                    // Import Logic
+                    // Import Logic (Merge)
                     if(d.exchanges) d.exchanges.forEach(x => { if(!allExchanges.includes(x)) allExchanges.push(x); });
                     if(d.assets) d.assets.forEach(x => { if(!watchlist.includes(x)) watchlist.push(x); });
                     saveAll(); location.reload();
