@@ -82,7 +82,7 @@
     </div>
 
     <div class="search-container">
-        <input type="text" id="filter-input" class="filter-input" placeholder="Cari exchange/source..." oninput="renderList()">
+        <input type="text" id="filter-input" class="filter-input" placeholder="Cari exchange atau koin..." oninput="renderList()">
     </div>
 
     <div class="control-row">
@@ -231,12 +231,10 @@
         let totalAllUsd = 0;
         let exchangeData = {};
 
-        // Inisialisasi semua exchange yang terdaftar
         allExchanges.forEach(ex => {
             exchangeData[ex] = { name: ex, coins: [], totalValue: 0 };
         });
 
-        // Masukkan koin ke dalam exchange masing-masing
         watchlist.forEach(sym => {
             (coinSources[sym] || []).forEach(src => {
                 if(exchangeData[src]) {
@@ -250,7 +248,12 @@
             });
         });
 
-        let exchangeArray = Object.values(exchangeData).filter(ex => ex.name.toUpperCase().includes(query));
+        // Smart Search: Cek nama exchange ATAU apakah exchange tersebut punya koin yang dicari
+        let exchangeArray = Object.values(exchangeData).filter(ex => {
+            const matchExchange = ex.name.toUpperCase().includes(query);
+            const matchCoin = ex.coins.some(c => c.sym.toUpperCase().includes(query));
+            return matchExchange || matchCoin;
+        });
 
         if (sortType === 'name') exchangeArray.sort((a, b) => a.name.localeCompare(b.name));
         else if (sortType === 'value') exchangeArray.sort((a, b) => b.totalValue - a.totalValue);
@@ -277,17 +280,16 @@
                     <span class="delete-coin" onclick="removeExchange('${ex.name}')">×</span>
                     <div id="det-${ex.name}" class="details" style="display:${expandedExchange===ex.name?'block':'none'}">
                         ${ex.coins.map(c => `
-                            <div class="source-row" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                <div class="logo-wrapper" style="width:28px; height:28px;">
+                            <div class="source-row" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; align-items: center; gap: 8px;">
+                                <div class="logo-wrapper" style="width:28px; height:28px; flex-shrink: 0;">
                                     <img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')">
                                 </div>
-                                <div style="flex:1">
-                                    <div style="display:flex; justify-content:space-between; margin-bottom:4px">
-                                        <span style="font-size:13px; font-weight:bold">${c.sym} <small class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}">${c.change}%</small></span>
-                                    </div>
-                                    <input type="number" class="source-input" style="width:100%" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
+                                <div style="width: 50px; flex-shrink: 0;">
+                                    <div style="font-size:13px; font-weight:bold">${c.sym}</div>
+                                    <div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size: 10px;">${c.change}%</div>
                                 </div>
-                                <span class="del-src" onclick="removeCoinFromExchange('${c.sym}', '${ex.name}')">×</span>
+                                <input type="number" class="source-input" style="flex: 1; min-width: 0;" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
+                                <span class="del-src" style="flex-shrink: 0;" onclick="removeCoinFromExchange('${c.sym}', '${ex.name}')">×</span>
                             </div>
                         `).join('')}
                         <div class="new-source-box">
@@ -302,7 +304,6 @@
         document.getElementById('total-all-usd').innerText = `$${totalAllUsd.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
     }
 
-    // Fungsi Tambah Exchange Baru
     function addNewExchange() {
         const input = document.getElementById('source-input-global');
         const name = input.value.trim();
@@ -316,7 +317,6 @@
         }
     }
 
-    // Fungsi Tambah Koin ke Exchange tertentu
     function addCoinToExchange(exName) {
         const input = document.getElementById(`add-coin-to-${exName}`);
         const sym = input.value.toUpperCase().trim();
