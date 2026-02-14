@@ -171,7 +171,6 @@
         setInterval(fetchAll, 60000);
     };
 
-    // Fungsi inti sinkronisasi Proper Case (Pintu, Binance, dll)
     function toProperCase(str) {
         if (!str) return "";
         return str.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -403,13 +402,11 @@
         if(!balances[s]) balances[s]={}; 
         balances[s][src] = v; 
         
-        // SINKRONISASI OTOMATIS
         if(!coinSources[s]) coinSources[s] = [];
         if(!coinSources[s].includes(src)) {
             coinSources[s].push(src);
         }
         
-        // Pastikan exchange ini terdaftar secara global
         if(!allExchanges.includes(src)) {
             allExchanges.push(src);
         }
@@ -432,7 +429,7 @@
         const input = document.getElementById(`new-src-input-${sym}`);
         const rawName = input.value.trim();
         if(rawName) {
-            const name = toProperCase(rawName); // PAKSA PROPER CASE
+            const name = toProperCase(rawName);
             if(!coinSources[sym].includes(name)) { 
                 coinSources[sym].push(name); 
                 if(!allExchanges.includes(name)) allExchanges.push(name); 
@@ -452,7 +449,7 @@
     function renameSource(sym, oldSrc) {
         const newNameRaw = prompt(`Ubah nama source "${oldSrc}":`, oldSrc);
         if (newNameRaw && newNameRaw.trim() !== "" && newNameRaw !== oldSrc) {
-            const newName = toProperCase(newNameRaw.trim()); // PAKSA PROPER CASE
+            const newName = toProperCase(newNameRaw.trim());
             const idx = coinSources[sym].indexOf(oldSrc);
             if (idx > -1) {
                 coinSources[sym][idx] = newName;
@@ -460,7 +457,6 @@
                     balances[sym][newName] = balances[sym][oldSrc];
                     delete balances[sym][oldSrc];
                 }
-                // Update juga nama di list exchange global kalau cocok
                 const exIdx = allExchanges.indexOf(oldSrc);
                 if(exIdx > -1) allExchanges[exIdx] = newName;
                 
@@ -489,29 +485,59 @@
     }
 
     function resetApp() { if(confirm("Hapus total semua data?")) { localStorage.clear(); location.reload(); } }
+    
     function exportData() {
         const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
         const a = document.createElement('a'); 
         a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
         a.download = `PORTO_BACKUP.json`; a.click();
     }
+
     function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').click(); }
+
     function handleFileSelect(e) {
         const reader = new FileReader();
         reader.onload = (f) => {
             try {
-                const d = JSON.parse(f.target.result);
+                let d = JSON.parse(f.target.result);
+                
+                // LOGIKA PEMBERSIHAN (PROPER CASE SEMUA EXCHANGE SAAT IMPORT)
+                const cleanExchanges = (d.exchanges || []).map(ex => toProperCase(ex));
+                const cleanSources = {};
+                for (let coin in (d.sources || {})) {
+                    cleanSources[coin] = d.sources[coin].map(src => toProperCase(src));
+                }
+                const cleanBalances = {};
+                for (let coin in (d.balances || {})) {
+                    cleanBalances[coin] = {};
+                    for (let src in d.balances[coin]) {
+                        cleanBalances[coin][toProperCase(src)] = d.balances[coin][src];
+                    }
+                }
+
                 if (currentMode === 'restore') {
-                    watchlist = d.assets || []; balances = d.balances || {}; coinSources = d.sources || {}; allExchanges = d.exchanges || [];
+                    watchlist = d.assets || []; 
+                    balances = cleanBalances; 
+                    coinSources = cleanSources; 
+                    allExchanges = cleanExchanges;
                 } else {
                     if(d.assets) d.assets.forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
-                    if(d.exchanges) d.exchanges.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
+                    cleanExchanges.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
+                    for(let coin in cleanSources) {
+                        if(!coinSources[coin]) coinSources[coin] = [];
+                        cleanSources[coin].forEach(src => { if(!coinSources[coin].includes(src)) coinSources[coin].push(src); });
+                    }
+                    for(let coin in cleanBalances) {
+                        if(!balances[coin]) balances[coin] = {};
+                        for(let src in cleanBalances[coin]) { balances[coin][src] = cleanBalances[coin][src]; }
+                    }
                 }
                 saveAll(); location.reload();
             } catch (err) { showToast("File gak valid!"); }
         };
         reader.readAsText(e.target.files[0]);
     }
+
     function exportToExcel() {
         let csv = "sep=,\nExchange,Koin,Saldo,Harga USD,Total USD\n";
         allExchanges.forEach(ex => {
