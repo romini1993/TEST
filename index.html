@@ -231,17 +231,17 @@
         let totalAllUsd = 0;
         let exchangeData = {};
 
-        // Mapping logo exchange
+        // Mapping logo exchange yang lebih stabil
         const exchangeLogos = {
-            "BINANCE": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FBinance_Icon_8f86f3454b.png&w=128&q=75",
-            "BYBIT": "https://static.bybit.com/navigation/bybit-logo-white-new.png",
-            "OKX": "https://www.okx.com/cdn-deploy/static/img/2021/01/OKX-Logo.png",
-            "GATE": "https://www.gate.io/images/logo/logo.png",
-            "TOKOCRYPTO": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FTokocrypto_Icon_6f7f89767c.png&w=128&q=75",
-            "INDODAX": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FIndodax_Icon_e490793b8d.png&w=128&q=75",
-            "PINTU": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FPintu_Icon_7e0c460d3d.png&w=128&q=75",
+            "BINANCE": "https://bin.bnbstatic.com/static/images/common/favicon.ico",
+            "BYBIT": "https://www.bybit.com/favicon.ico",
+            "OKX": "https://www.okx.com/favicon.ico",
+            "GATE": "https://www.gate.io/favicon.ico",
+            "TOKOCRYPTO": "https://www.tokocrypto.com/favicon.ico",
+            "INDODAX": "https://indodax.com/favicon.ico",
+            "PINTU": "https://pintu.co.id/favicon.ico",
             "MEXC": "https://www.mexc.com/favicon.ico",
-            "KUCOIN": "https://pintu.co.id/_next/image?url=https%3A%2F%2Fpintu-academy.s3.ap-southeast-1.amazonaws.com%2FKu_Coin_Icon_9b8374a49c.png&w=128&q=75",
+            "KUCOIN": "https://www.kucoin.com/favicon.ico",
             "BITMART": "https://www.bitmart.com/favicon.ico"
         };
 
@@ -280,13 +280,13 @@
             const exKey = ex.name.toUpperCase();
             let logoHtml = `<div class="logo-initial">${ex.name.substring(0,2)}</div>`;
             if(exchangeLogos[exKey]) {
-                logoHtml = `<img src="${exchangeLogos[exKey]}" alt="${ex.name}" style="width:100%; height:100%; object-fit:contain; background:#fff; padding:2px;">`;
+                logoHtml = `<img src="${exchangeLogos[exKey]}" alt="${ex.name}" style="width:20px; height:20px; object-fit:contain;">`;
             }
 
             list.innerHTML += `
                 <div class="coin-row">
                     <div class="coin-card" onclick="toggleDetail('${ex.name}')">
-                        <div class="logo-wrapper">
+                        <div class="logo-wrapper" style="background: #fff;">
                             ${logoHtml}
                         </div>
                         <div class="info-group">
