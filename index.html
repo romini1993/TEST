@@ -171,6 +171,11 @@
         setInterval(fetchAll, 60000);
     };
 
+    // Helper untuk merapikan text (Binance, Coinbase, dll)
+    function toProperCase(str) {
+        return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    }
+
     function switchTab(tab) {
         currentTab = tab;
         expandedItem = null;
@@ -286,7 +291,6 @@
                 });
             });
 
-            // Logic Smart Filter untuk Tab Exchange
             let exchangeArray = Object.values(exchangeData).filter(ex => {
                 const matchExchange = ex.name.toUpperCase().includes(query);
                 const matchCoinInExchange = ex.coins.some(c => c.sym.toUpperCase().includes(query));
@@ -326,7 +330,6 @@
                     </div>`;
             });
         } else {
-            // Logic Smart Filter untuk Tab Coin
             let filtered = watchlist.filter(sym => {
                 const matchCoinName = sym.toUpperCase().includes(query);
                 const matchExchangeInCoin = (coinSources[sym] || []).some(src => src.toUpperCase().includes(query));
@@ -379,19 +382,36 @@
 
     function handleGlobalAdd() {
         const input = document.getElementById('global-add-input');
-        const val = input.value.trim().toUpperCase();
-        if(!val) return;
+        const rawVal = input.value.trim();
+        if(!rawVal) return;
+
         if(currentTab === 'exchange') {
+            const val = toProperCase(rawVal);
             if(!allExchanges.includes(val)) { allExchanges.push(val); saveAll(); input.value = ""; renderList(); }
             else showToast("Exchange sudah ada!");
         } else {
+            const val = rawVal.toUpperCase();
             if(!watchlist.includes(val)) { watchlist.push(val); coinSources[val] = []; saveAll(); input.value = ""; fetchAll(); }
             else showToast("Koin sudah ada!");
         }
     }
 
     function toggleDetail(id) { expandedItem = (expandedItem === id) ? null : id; renderList(); }
-    function updateBal(s, src, v) { if(!balances[s]) balances[s]={}; balances[s][src] = v; saveAll(); updateSummary(); }
+    
+    // Fungsi Update Balances yang otomatis Sinkron ke CoinSources
+    function updateBal(s, src, v) { 
+        if(!balances[s]) balances[s]={}; 
+        balances[s][src] = v; 
+        
+        // Pastikan nama source ini ada di coinSources koin tersebut agar muncul di dua tab
+        if(!coinSources[s]) coinSources[s] = [];
+        if(!coinSources[s].includes(src)) {
+            coinSources[s].push(src);
+        }
+        
+        saveAll(); 
+        updateSummary(); 
+    }
     
     function addCoinToExchange(exName) {
         const input = document.getElementById(`add-coin-to-${exName}`);
@@ -405,9 +425,15 @@
 
     function addCustomSource(sym) {
         const input = document.getElementById(`new-src-input-${sym}`);
-        const name = input.value.trim();
-        if(name) {
-            if(!coinSources[sym].includes(name)) { coinSources[sym].push(name); if(!allExchanges.includes(name)) allExchanges.push(name); saveAll(); renderList(); }
+        const rawName = input.value.trim();
+        if(rawName) {
+            const name = toProperCase(rawName);
+            if(!coinSources[sym].includes(name)) { 
+                coinSources[sym].push(name); 
+                if(!allExchanges.includes(name)) allExchanges.push(name); 
+                saveAll(); 
+                renderList(); 
+            }
             else showToast("Source sudah ada!");
         }
     }
@@ -418,13 +444,14 @@
     function removeSource(sym, src) { if(confirm(`Hapus ${src}?`)) { coinSources[sym] = coinSources[sym].filter(s => s !== src); saveAll(); renderList(); } }
 
     function renameSource(sym, oldSrc) {
-        const newName = prompt(`Ubah nama source "${oldSrc}":`, oldSrc);
-        if (newName && newName.trim() !== "" && newName !== oldSrc) {
+        const newNameRaw = prompt(`Ubah nama source "${oldSrc}":`, oldSrc);
+        if (newNameRaw && newNameRaw.trim() !== "" && newNameRaw !== oldSrc) {
+            const newName = toProperCase(newNameRaw.trim());
             const idx = coinSources[sym].indexOf(oldSrc);
             if (idx > -1) {
-                coinSources[sym][idx] = newName.trim();
+                coinSources[sym][idx] = newName;
                 if (balances[sym] && balances[sym][oldSrc] !== undefined) {
-                    balances[sym][newName.trim()] = balances[sym][oldSrc];
+                    balances[sym][newName] = balances[sym][oldSrc];
                     delete balances[sym][oldSrc];
                 }
                 saveAll(); renderList();
