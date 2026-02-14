@@ -213,7 +213,14 @@
     async function fetchAll() {
         const fetchPromises = watchlist.map(async (s) => {
             try {
+                // Logika khusus buat IDR murni
+                if(s === 'IDR') {
+                    prices[s] = 1 / usdToIdr; // Simpan harga dalam USD (Rp 1 = 1/Kurs USD)
+                    changes[s] = "0.00";
+                    return;
+                }
                 if(['USDT','USDC','USD','BUSD'].includes(s)) { prices[s] = 1; changes[s] = "0.00"; return; }
+                
                 let found = false;
                 const rb = await fetch(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${s}USDT`);
                 const db = await rb.json();
@@ -248,6 +255,10 @@
     }
 
     function handleLogoError(img, sym) {
+        if(sym === 'IDR') {
+            img.parentElement.innerHTML = `<div class="logo-initial" style="background:#4ade80; color:#0f172a">Rp</div>`;
+            return;
+        }
         const retry = parseInt(img.getAttribute('data-retry') || "0");
         const sources = [`https://assets.coincap.io/assets/icons/${sym.toLowerCase()}@2x.png`, `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${sym.toLowerCase()}.png` ];
         if (retry < sources.length) {
@@ -316,7 +327,9 @@
                         <div id="det-${ex.name}" class="details" style="display:${expandedItem===ex.name?'block':'none'}">
                             ${ex.coins.map(c => `
                                 <div class="source-row">
-                                    <div class="logo-wrapper" style="width:28px; height:28px;"><img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')"></div>
+                                    <div class="logo-wrapper" style="width:28px; height:28px;">
+                                        ${c.sym === 'IDR' ? '<div class="logo-initial" style="background:#4ade80; color:#0f172a; font-size:9px;">Rp</div>' : `<img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')">`}
+                                    </div>
                                     <div style="width: 50px;"><div style="font-size:13px; font-weight:bold">${c.sym}</div><div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size: 10px;">${c.change}%</div></div>
                                     <input type="number" class="source-input" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
                                     <span class="del-src" onclick="removeCoinFromExchange('${c.sym}', '${ex.name}')">×</span>
@@ -350,11 +363,13 @@
                 list.innerHTML += `
                     <div class="coin-row">
                         <div class="coin-card" onclick="toggleDetail('${sym}')">
-                            <div class="logo-wrapper"><img src="https://coinicons-api.vercel.app/api/icon/${sym.toLowerCase()}" onerror="handleLogoError(this, '${sym}')"></div>
+                            <div class="logo-wrapper">
+                                ${sym === 'IDR' ? '<div class="logo-initial" style="background:#4ade80; color:#0f172a">Rp</div>' : `<img src="https://coinicons-api.vercel.app/api/icon/${sym.toLowerCase()}" onerror="handleLogoError(this, '${sym}')">`}
+                            </div>
                             <div class="info-group">
                                 <span class="symbol">${sym}</span>
                                 <span class="change-pct ${parseFloat(change) >= 0 ? 'up' : 'down'}">${parseFloat(change) >= 0 ? '+' : ''}${change}%</span><br>
-                                <span style="font-size:11px; color:var(--subtext)">$${price.toLocaleString(undefined, {minimumFractionDigits: price < 1 ? 4 : 2})}</span>
+                                <span style="font-size:11px; color:var(--subtext)">${sym === 'IDR' ? 'Stable IDR' : '$' + price.toLocaleString(undefined, {minimumFractionDigits: price < 1 ? 4 : 2})}</span>
                             </div>
                             <div style="text-align:right; margin-right:10px;"><span style="font-weight:bold; font-size:15px;">${coinTotal.toLocaleString()}</span><br><span style="font-size:10px; color:var(--subtext)">${valueDisplay}</span></div>
                         </div>
@@ -391,7 +406,13 @@
             else showToast("Exchange sudah ada!");
         } else {
             const val = rawVal.toUpperCase();
-            if(!watchlist.includes(val)) { watchlist.push(val); coinSources[val] = []; saveAll(); input.value = ""; fetchAll(); }
+            if(!watchlist.includes(val)) { 
+                watchlist.push(val); 
+                coinSources[val] = []; 
+                saveAll(); 
+                input.value = ""; 
+                fetchAll(); 
+            }
             else showToast("Koin sudah ada!");
         }
     }
@@ -401,16 +422,9 @@
     function updateBal(s, src, v) { 
         if(!balances[s]) balances[s]={}; 
         balances[s][src] = v; 
-        
         if(!coinSources[s]) coinSources[s] = [];
-        if(!coinSources[s].includes(src)) {
-            coinSources[s].push(src);
-        }
-        
-        if(!allExchanges.includes(src)) {
-            allExchanges.push(src);
-        }
-        
+        if(!coinSources[s].includes(src)) coinSources[s].push(src);
+        if(!allExchanges.includes(src)) allExchanges.push(src);
         saveAll(); 
         updateSummary(); 
     }
@@ -433,9 +447,7 @@
             if(!coinSources[sym].includes(name)) { 
                 coinSources[sym].push(name); 
                 if(!allExchanges.includes(name)) allExchanges.push(name); 
-                saveAll(); 
-                renderList(); 
-                input.value = "";
+                saveAll(); renderList(); input.value = "";
             }
             else showToast("Source sudah ada!");
         }
@@ -459,7 +471,6 @@
                 }
                 const exIdx = allExchanges.indexOf(oldSrc);
                 if(exIdx > -1) allExchanges[exIdx] = newName;
-                
                 saveAll(); renderList();
             }
         }
@@ -489,22 +500,9 @@
     function exportData() {
         const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
         const now = new Date();
-        const dateStr = now.getFullYear() + 
-                        String(now.getMonth() + 1).padStart(2, '0') + 
-                        String(now.getDate()).padStart(2, '0') + "_" + 
-                        String(now.getHours()).padStart(2, '0') + 
-                        String(now.getMinutes()).padStart(2, '0') + 
-                        String(now.getSeconds()).padStart(2, '0');
-        
-        const defaultName = `PORTO_${dateStr}`;
-        const fileName = prompt("Beri nama file backup elu:", defaultName);
-        
-        if (fileName === null) return; // User klik cancel
-        
-        const finalName = fileName.trim() || defaultName;
-        const a = document.createElement('a'); 
-        a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-        a.download = `${finalName}.json`; a.click();
+        const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0') + "_" + String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0') + String(now.getSeconds()).padStart(2, '0');
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
+        a.download = `PORTO_${dateStr}.json`; a.click();
     }
 
     function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').click(); }
@@ -516,23 +514,14 @@
                 let d = JSON.parse(f.target.result);
                 const cleanExchanges = (d.exchanges || []).map(ex => toProperCase(ex));
                 const cleanSources = {};
-                for (let coin in (d.sources || {})) {
-                    cleanSources[coin] = d.sources[coin].map(src => toProperCase(src));
-                }
+                for (let coin in (d.sources || {})) cleanSources[coin] = d.sources[coin].map(src => toProperCase(src));
                 const cleanBalances = {};
                 for (let coin in (d.balances || {})) {
                     cleanBalances[coin] = {};
-                    for (let src in d.balances[coin]) {
-                        cleanBalances[coin][toProperCase(src)] = d.balances[coin][src];
-                    }
+                    for (let src in d.balances[coin]) cleanBalances[coin][toProperCase(src)] = d.balances[coin][src];
                 }
-
-                if (currentMode === 'restore') {
-                    watchlist = d.assets || []; 
-                    balances = cleanBalances; 
-                    coinSources = cleanSources; 
-                    allExchanges = cleanExchanges;
-                } else {
+                if (currentMode === 'restore') { watchlist = d.assets || []; balances = cleanBalances; coinSources = cleanSources; allExchanges = cleanExchanges; }
+                else {
                     if(d.assets) d.assets.forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
                     cleanExchanges.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
                     for(let coin in cleanSources) {
@@ -541,7 +530,7 @@
                     }
                     for(let coin in cleanBalances) {
                         if(!balances[coin]) balances[coin] = {};
-                        for(let src in cleanBalances[coin]) { balances[coin][src] = cleanBalances[coin][src]; }
+                        for(let src in cleanBalances[coin]) balances[coin][src] = cleanBalances[coin][src];
                     }
                 }
                 saveAll(); location.reload();
