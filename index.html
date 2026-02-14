@@ -44,14 +44,14 @@
         .down { color: var(--down); }
         .delete-coin { position: absolute; right: -25px; top: 50%; transform: translateY(-50%); color: var(--down); font-size: 20px; cursor: pointer; padding: 10px; }
         
-        .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 20px 15px 15px 15px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
-        .source-row { display: flex; align-items: center; margin-bottom: 10px; gap: 8px; }
-        .source-label { font-size: 12px; color: var(--subtext); width: 80px; flex-shrink: 0; cursor: pointer; }
+        .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 12px 12px 12px 12px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
+        .source-row { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
+        .source-label { font-size: 11px; color: var(--subtext); width: 100px; flex-shrink: 0; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .source-input { flex: 1; background: #000; border: 1px solid #475569; color: #fff; text-align: left; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; }
-        .edit-src { color: var(--accent); font-size: 14px; cursor: pointer; margin-left: 4px; }
+        .edit-src { color: var(--accent); font-size: 12px; cursor: pointer; margin-left: 4px; vertical-align: middle; }
         .del-src { color: var(--down); font-size: 18px; cursor: pointer; margin-left: 8px; }
         
-        .new-source-box { display: flex; gap: 5px; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .new-source-box { display: flex; gap: 5px; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); }
         .new-source-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px dashed #475569; color: #fff; border-radius: 6px; padding: 6px 10px; font-size: 11px; outline: none; }
         .new-source-btn { background: #334155; color: var(--accent); border: none; border-radius: 6px; padding: 0 12px; font-weight: bold; cursor: pointer; }
 
@@ -213,9 +213,8 @@
     async function fetchAll() {
         const fetchPromises = watchlist.map(async (s) => {
             try {
-                // Logika khusus buat IDR murni
                 if(s === 'IDR') {
-                    prices[s] = 1 / usdToIdr; // Simpan harga dalam USD (Rp 1 = 1/Kurs USD)
+                    prices[s] = 1 / usdToIdr;
                     changes[s] = "0.00";
                     return;
                 }
@@ -406,13 +405,7 @@
             else showToast("Exchange sudah ada!");
         } else {
             const val = rawVal.toUpperCase();
-            if(!watchlist.includes(val)) { 
-                watchlist.push(val); 
-                coinSources[val] = []; 
-                saveAll(); 
-                input.value = ""; 
-                fetchAll(); 
-            }
+            if(!watchlist.includes(val)) { watchlist.push(val); coinSources[val] = []; saveAll(); input.value = ""; fetchAll(); }
             else showToast("Koin sudah ada!");
         }
     }
@@ -425,8 +418,7 @@
         if(!coinSources[s]) coinSources[s] = [];
         if(!coinSources[s].includes(src)) coinSources[s].push(src);
         if(!allExchanges.includes(src)) allExchanges.push(src);
-        saveAll(); 
-        updateSummary(); 
+        saveAll(); updateSummary(); 
     }
     
     function addCoinToExchange(exName) {
