@@ -496,9 +496,15 @@
                         String(now.getMinutes()).padStart(2, '0') + 
                         String(now.getSeconds()).padStart(2, '0');
         
+        const defaultName = `PORTO_${dateStr}`;
+        const fileName = prompt("Beri nama file backup elu:", defaultName);
+        
+        if (fileName === null) return; // User klik cancel
+        
+        const finalName = fileName.trim() || defaultName;
         const a = document.createElement('a'); 
         a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-        a.download = `PORTO_${dateStr}.json`; a.click();
+        a.download = `${finalName}.json`; a.click();
     }
 
     function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').click(); }
