@@ -231,18 +231,20 @@
         let totalAllUsd = 0;
         let exchangeData = {};
 
-        // Mapping logo exchange yang lebih stabil
+        // Update link logo exchange yang lebih akurat
         const exchangeLogos = {
             "BINANCE": "https://bin.bnbstatic.com/static/images/common/favicon.ico",
             "BYBIT": "https://www.bybit.com/favicon.ico",
             "OKX": "https://www.okx.com/favicon.ico",
             "GATE": "https://www.gate.io/favicon.ico",
-            "TOKOCRYPTO": "https://www.tokocrypto.com/favicon.ico",
+            "TOKOCRYPTO": "https://www.tokocrypto.com/favicon.png",
             "INDODAX": "https://indodax.com/favicon.ico",
             "PINTU": "https://pintu.co.id/favicon.ico",
             "MEXC": "https://www.mexc.com/favicon.ico",
             "KUCOIN": "https://www.kucoin.com/favicon.ico",
-            "BITMART": "https://www.bitmart.com/favicon.ico"
+            "BITMART": "https://www.bitmart.com/favicon.ico",
+            "BITGET": "https://www.bitget.com/favicon.ico",
+            "COINBASE": "https://www.coinbase.com/favicon.ico"
         };
 
         allExchanges.forEach(ex => {
@@ -276,7 +278,6 @@
                 ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}`
                 : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-            // Logika Pilih Logo Exchange
             const exKey = ex.name.toUpperCase();
             let logoHtml = `<div class="logo-initial">${ex.name.substring(0,2)}</div>`;
             if(exchangeLogos[exKey]) {
