@@ -37,6 +37,18 @@
         .details { background: #161e2e; margin: -10px 5px 10px 5px; padding: 12px; border-radius: 0 0 12px 12px; border: 1px solid #334155; display: none; }
         .source-row { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
         .source-label { font-size: 13px; font-weight: bold; color: var(--text); width: 100px; flex-shrink: 0; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; }
+        
+        /* --- KODE ANTI-SEGITIGA (SPIN BUTTONS) --- */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        /* ----------------------------------------- */
+
         .source-input { flex: 1; background: #000; border: 1px solid #475569; color: #fff; text-align: left; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; }
         .edit-src { color: var(--accent); font-size: 10px; margin-left: 5px; display: inline-flex; align-items: center; }
         .del-src { color: var(--down); font-size: 18px; cursor: pointer; margin-left: 8px; }
@@ -243,30 +255,24 @@
         else { const sym = v.toUpperCase(); if(!watchlist.includes(sym)) { watchlist.push(sym); coinSources[sym] = []; saveAll(); input.value = ""; fetchAll(); } }
     }
 
-    // FIX: Langsung muncul pas di-tambah di Exchange box
     function addCoinToExchange(ex) { 
         const input = document.getElementById(`add-coin-to-${ex}`); 
         const s = input.value.toUpperCase().trim(); 
         if(s) { 
             if(!watchlist.includes(s)) { watchlist.push(s); coinSources[s]=[]; } 
             if(!coinSources[s].includes(ex)) { 
-                coinSources[s].push(ex); saveAll(); input.value=""; 
-                renderList(); // <-- Update UI langsung
-                fetchAll(); 
+                coinSources[s].push(ex); saveAll(); input.value=""; renderList(); fetchAll(); 
             } else { showToast("Koin udah ada!"); }
         } 
     }
 
-    // FIX: Langsung muncul pas di-tambah di Coin box
     function addCustomSource(s) { 
         const input = document.getElementById(`new-src-input-${s}`); 
         const v = toProperCase(input.value.trim()); 
         if(v) { 
             if(!coinSources[s].includes(v)) { 
-                coinSources[s].push(v); 
-                if(!allExchanges.includes(v)) allExchanges.push(v); 
-                saveAll(); 
-                renderList(); // <-- Update UI langsung
+                coinSources[s].push(v); if(!allExchanges.includes(v)) allExchanges.push(v); 
+                saveAll(); renderList();
             } else { showToast("Source udah ada!"); }
         } 
     }
@@ -299,19 +305,12 @@
         reader.onload = (f) => {
             try {
                 let d = JSON.parse(f.target.result);
-                if (currentMode === 'restore') {
-                    watchlist = d.assets || []; balances = d.balances || {}; coinSources = d.sources || {}; allExchanges = d.exchanges || [];
-                } else {
+                if (currentMode === 'restore') { watchlist = d.assets || []; balances = d.balances || {}; coinSources = d.sources || {}; allExchanges = d.exchanges || []; } 
+                else {
                     if(d.assets) d.assets.forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
                     if(d.exchanges) d.exchanges.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
-                    for(let coin in d.sources) {
-                        if(!coinSources[coin]) coinSources[coin] = [];
-                        d.sources[coin].forEach(src => { if(!coinSources[coin].includes(src)) coinSources[coin].push(src); });
-                    }
-                    for(let coin in d.balances) {
-                        if(!balances[coin]) balances[coin] = {};
-                        for(let src in d.balances[coin]) { balances[coin][src] = d.balances[coin][src]; }
-                    }
+                    for(let coin in d.sources) { if(!coinSources[coin]) coinSources[coin] = []; d.sources[coin].forEach(src => { if(!coinSources[coin].includes(src)) coinSources[coin].push(src); }); }
+                    for(let coin in d.balances) { if(!balances[coin]) balances[coin] = {}; for(let src in d.balances[coin]) { balances[coin][src] = d.balances[coin][src]; } }
                 }
                 saveAll(); location.reload();
             } catch (err) { showToast("File gak valid!"); }
