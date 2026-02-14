@@ -231,20 +231,20 @@
         let totalAllUsd = 0;
         let exchangeData = {};
 
-        // Update link logo exchange yang lebih akurat
+        // Link logo diperbarui khusus MEXC, Tokocrypto, KuCoin, Bitget, Coinbase
         const exchangeLogos = {
             "BINANCE": "https://bin.bnbstatic.com/static/images/common/favicon.ico",
             "BYBIT": "https://www.bybit.com/favicon.ico",
             "OKX": "https://www.okx.com/favicon.ico",
             "GATE": "https://www.gate.io/favicon.ico",
-            "TOKOCRYPTO": "https://www.tokocrypto.com/favicon.png",
+            "TOKOCRYPTO": "https://s2.coinmarketcap.com/static/img/exchanges/64x64/1043.png",
             "INDODAX": "https://indodax.com/favicon.ico",
             "PINTU": "https://pintu.co.id/favicon.ico",
-            "MEXC": "https://www.mexc.com/favicon.ico",
-            "KUCOIN": "https://www.kucoin.com/favicon.ico",
+            "MEXC": "https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png",
+            "KUCOIN": "https://s2.coinmarketcap.com/static/img/exchanges/64x64/311.png",
             "BITMART": "https://www.bitmart.com/favicon.ico",
-            "BITGET": "https://www.bitget.com/favicon.ico",
-            "COINBASE": "https://www.coinbase.com/favicon.ico"
+            "BITGET": "https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png",
+            "COINBASE": "https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png"
         };
 
         allExchanges.forEach(ex => {
@@ -281,7 +281,7 @@
             const exKey = ex.name.toUpperCase();
             let logoHtml = `<div class="logo-initial">${ex.name.substring(0,2)}</div>`;
             if(exchangeLogos[exKey]) {
-                logoHtml = `<img src="${exchangeLogos[exKey]}" alt="${ex.name}" style="width:20px; height:20px; object-fit:contain;">`;
+                logoHtml = `<img src="${exchangeLogos[exKey]}" alt="${ex.name}" style="width:22px; height:22px; object-fit:contain;">`;
             }
 
             list.innerHTML += `
