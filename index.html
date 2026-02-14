@@ -20,7 +20,6 @@
         .summary-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--accent); text-align: center; }
         .summary-idr { font-size: 26px; font-weight: 800; display: block; }
 
-        /* Style Tab Switcher Baru */
         .tab-container { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 12px; border: 1px solid #334155; }
         .tab-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; background: transparent; color: var(--subtext); cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.3s; }
         .tab-btn.active { background: var(--accent); color: #0f172a; }
@@ -92,7 +91,7 @@
     </div>
 
     <div class="search-container">
-        <input type="text" id="filter-input" class="filter-input" placeholder="Cari..." oninput="renderList()">
+        <input type="text" id="filter-input" class="filter-input" placeholder="Cari Exchange atau Koin..." oninput="renderList()">
     </div>
 
     <div class="control-row">
@@ -133,9 +132,8 @@
     let prices = {};
     let changes = {};
     let coinMapCG = {};
-    let currentTab = 'exchange'; // Default tab
+    let currentTab = 'exchange'; 
     
-    // Data Persistence
     let watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '["BTC", "ETH"]');
     let balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
     let coinSources = JSON.parse(localStorage.getItem('my_coin_sources') || '{}');
@@ -273,7 +271,6 @@
         let totalAllUsd = 0;
 
         if (currentTab === 'exchange') {
-            // MODE EXCHANGE
             let exchangeData = {};
             allExchanges.forEach(ex => { exchangeData[ex] = { name: ex, coins: [], totalValue: 0 }; });
 
@@ -285,19 +282,22 @@
                         const value = bal * price;
                         exchangeData[src].coins.push({ sym, bal, price, value, change: changes[sym] || "0.00" });
                         exchangeData[src].totalValue += value;
-                        totalAllUsd += value;
                     }
                 });
             });
 
-            let exchangeArray = Object.values(exchangeData).filter(ex => 
-                ex.name.toUpperCase().includes(query) || ex.coins.some(c => c.sym.includes(query))
-            );
+            // Logic Smart Filter untuk Tab Exchange
+            let exchangeArray = Object.values(exchangeData).filter(ex => {
+                const matchExchange = ex.name.toUpperCase().includes(query);
+                const matchCoinInExchange = ex.coins.some(c => c.sym.toUpperCase().includes(query));
+                return matchExchange || matchCoinInExchange;
+            });
 
             if (sortType === 'name') exchangeArray.sort((a, b) => a.name.localeCompare(b.name));
             else if (sortType === 'value') exchangeArray.sort((a, b) => b.totalValue - a.totalValue);
 
             exchangeArray.forEach(ex => {
+                totalAllUsd += ex.totalValue;
                 const valueDisplay = (currencyView === 'IDR') ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}` : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
                 const logoHtml = exchangeLogos[ex.name.toUpperCase()] ? `<img src="${exchangeLogos[ex.name.toUpperCase()]}" style="width:22px; height:22px; object-fit:contain;">` : `<div class="logo-initial">${ex.name.substring(0,2)}</div>`;
 
@@ -326,8 +326,13 @@
                     </div>`;
             });
         } else {
-            // MODE COIN
-            let filtered = watchlist.filter(s => s.includes(query));
+            // Logic Smart Filter untuk Tab Coin
+            let filtered = watchlist.filter(sym => {
+                const matchCoinName = sym.toUpperCase().includes(query);
+                const matchExchangeInCoin = (coinSources[sym] || []).some(src => src.toUpperCase().includes(query));
+                return matchCoinName || matchExchangeInCoin;
+            });
+
             if (sortType === 'name') filtered.sort((a, b) => a.localeCompare(b));
             else if (sortType === 'value') filtered.sort((a, b) => (getCoinTotal(b)*(prices[b]||0)) - (getCoinTotal(a)*(prices[a]||0)));
 
@@ -372,7 +377,6 @@
         document.getElementById('total-all-usd').innerText = `$${totalAllUsd.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
     }
 
-    // Fungsi Tambahan (Logic)
     function handleGlobalAdd() {
         const input = document.getElementById('global-add-input');
         const val = input.value.trim().toUpperCase();
@@ -447,7 +451,6 @@
         setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
     }
 
-    // Backup & Restore
     function resetApp() { if(confirm("Hapus total semua data?")) { localStorage.clear(); location.reload(); } }
     function exportData() {
         const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
@@ -466,7 +469,6 @@
                 } else {
                     if(d.assets) d.assets.forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
                     if(d.exchanges) d.exchanges.forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
-                    // Merging logic here...
                 }
                 saveAll(); location.reload();
             } catch (err) { showToast("File gak valid!"); }
