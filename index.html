@@ -133,6 +133,7 @@
     let changes = {};
     let coinMapCG = {};
     let currentTab = 'exchange'; 
+    let isFetching = false;
     
     let watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '["BTC", "ETH"]');
     let balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
@@ -211,14 +212,23 @@
     }
 
     async function fetchAll() {
-        const fetchPromises = watchlist.map(async (s) => {
+        if(isFetching) return;
+        isFetching = true;
+        
+        // Update Antrean (Queue) biar gak berat
+        for (const s of watchlist) {
+            await new Promise(resolve => setTimeout(resolve, 50)); // Jeda 50ms per koin
             try {
                 if(s === 'IDR') {
                     prices[s] = 1 / usdToIdr;
                     changes[s] = "0.00";
-                    return;
+                    continue;
                 }
-                if(['USDT','USDC','USD','BUSD'].includes(s)) { prices[s] = 1; changes[s] = "0.00"; return; }
+                if(['USDT','USDC','USD','BUSD'].includes(s)) { 
+                    prices[s] = 1; 
+                    changes[s] = "0.00"; 
+                    continue; 
+                }
                 
                 let found = false;
                 const rb = await fetch(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${s}USDT`);
@@ -247,10 +257,11 @@
                     }
                 }
             } catch(e) {}
-        });
-        await Promise.all(fetchPromises);
+        }
+        
         document.getElementById('last-updated').innerText = `Update: ${new Date().toLocaleTimeString('id-ID')}`;
         renderList();
+        isFetching = false;
     }
 
     function handleLogoError(img, sym) {
@@ -313,7 +324,7 @@
             exchangeArray.forEach(ex => {
                 totalAllUsd += ex.totalValue;
                 const valueDisplay = (currencyView === 'IDR') ? `Rp ${(ex.totalValue * usdToIdr).toLocaleString('id-ID', {maximumFractionDigits:0})}` : `$${ex.totalValue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                const logoHtml = exchangeLogos[ex.name.toUpperCase()] ? `<img src="${exchangeLogos[ex.name.toUpperCase()]}" style="width:22px; height:22px; object-fit:contain;">` : `<div class="logo-initial">${ex.name.substring(0,2)}</div>`;
+                const logoHtml = exchangeLogos[ex.name.toUpperCase()] ? `<img src="${exchangeLogos[ex.name.toUpperCase()]}" style="width:22px; height:22px; object-fit:contain;" loading="lazy">` : `<div class="logo-initial">${ex.name.substring(0,2)}</div>`;
 
                 list.innerHTML += `
                     <div class="coin-row">
@@ -327,7 +338,7 @@
                             ${ex.coins.map(c => `
                                 <div class="source-row">
                                     <div class="logo-wrapper" style="width:28px; height:28px;">
-                                        ${c.sym === 'IDR' ? '<div class="logo-initial" style="background:#4ade80; color:#0f172a; font-size:9px;">Rp</div>' : `<img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')">`}
+                                        ${c.sym === 'IDR' ? '<div class="logo-initial" style="background:#4ade80; color:#0f172a; font-size:9px;">Rp</div>' : `<img src="https://coinicons-api.vercel.app/api/icon/${c.sym.toLowerCase()}" onerror="handleLogoError(this, '${c.sym}')" loading="lazy">`}
                                     </div>
                                     <div style="width: 50px;"><div style="font-size:13px; font-weight:bold">${c.sym}</div><div class="${parseFloat(c.change) >= 0 ? 'up' : 'down'}" style="font-size: 10px;">${c.change}%</div></div>
                                     <input type="number" class="source-input" inputmode="decimal" value="${c.bal || ''}" oninput="updateBal('${c.sym}','${ex.name}',this.value)" placeholder="0">
@@ -363,7 +374,7 @@
                     <div class="coin-row">
                         <div class="coin-card" onclick="toggleDetail('${sym}')">
                             <div class="logo-wrapper">
-                                ${sym === 'IDR' ? '<div class="logo-initial" style="background:#4ade80; color:#0f172a">Rp</div>' : `<img src="https://coinicons-api.vercel.app/api/icon/${sym.toLowerCase()}" onerror="handleLogoError(this, '${sym}')">`}
+                                ${sym === 'IDR' ? '<div class="logo-initial" style="background:#4ade80; color:#0f172a">Rp</div>' : `<img src="https://coinicons-api.vercel.app/api/icon/${sym.toLowerCase()}" onerror="handleLogoError(this, '${sym}')" loading="lazy">`}
                             </div>
                             <div class="info-group">
                                 <span class="symbol">${sym}</span>
@@ -511,7 +522,6 @@
         
         const defaultName = `PORTO_${dateStr}`;
         const fileName = prompt("Beri nama file backup:", defaultName);
-        
         if (fileName === null) return; 
 
         const finalName = fileName.trim() || defaultName;
