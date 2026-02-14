@@ -323,7 +323,7 @@
                                 </div>
                             `).join('')}
                             <div class="new-source-box">
-                                <input type="text" id="add-coin-to-${ex.name}" class="new-source-input" placeholder="Tambah koin...">
+                                <input type="text" id="add-coin-to-${exName}" class="new-source-input" placeholder="Tambah koin...">
                                 <button class="new-source-btn" onclick="addCoinToExchange('${ex.name}')">+</button>
                             </div>
                         </div>
@@ -488,9 +488,17 @@
     
     function exportData() {
         const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
+        const now = new Date();
+        const dateStr = now.getFullYear() + 
+                        String(now.getMonth() + 1).padStart(2, '0') + 
+                        String(now.getDate()).padStart(2, '0') + "_" + 
+                        String(now.getHours()).padStart(2, '0') + 
+                        String(now.getMinutes()).padStart(2, '0') + 
+                        String(now.getSeconds()).padStart(2, '0');
+        
         const a = document.createElement('a'); 
         a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-        a.download = `PORTO_BACKUP.json`; a.click();
+        a.download = `PORTO_${dateStr}.json`; a.click();
     }
 
     function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').click(); }
@@ -500,8 +508,6 @@
         reader.onload = (f) => {
             try {
                 let d = JSON.parse(f.target.result);
-                
-                // LOGIKA PEMBERSIHAN (PROPER CASE SEMUA EXCHANGE SAAT IMPORT)
                 const cleanExchanges = (d.exchanges || []).map(ex => toProperCase(ex));
                 const cleanSources = {};
                 for (let coin in (d.sources || {})) {
