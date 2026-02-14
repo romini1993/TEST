@@ -171,9 +171,10 @@
         setInterval(fetchAll, 60000);
     };
 
-    // Helper untuk merapikan text (Binance, Coinbase, dll)
+    // Fungsi inti sinkronisasi Proper Case (Pintu, Binance, dll)
     function toProperCase(str) {
-        return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        if (!str) return "";
+        return str.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
 
     function switchTab(tab) {
@@ -398,15 +399,19 @@
 
     function toggleDetail(id) { expandedItem = (expandedItem === id) ? null : id; renderList(); }
     
-    // Fungsi Update Balances yang otomatis Sinkron ke CoinSources
     function updateBal(s, src, v) { 
         if(!balances[s]) balances[s]={}; 
         balances[s][src] = v; 
         
-        // Pastikan nama source ini ada di coinSources koin tersebut agar muncul di dua tab
+        // SINKRONISASI OTOMATIS
         if(!coinSources[s]) coinSources[s] = [];
         if(!coinSources[s].includes(src)) {
             coinSources[s].push(src);
+        }
+        
+        // Pastikan exchange ini terdaftar secara global
+        if(!allExchanges.includes(src)) {
+            allExchanges.push(src);
         }
         
         saveAll(); 
@@ -427,12 +432,13 @@
         const input = document.getElementById(`new-src-input-${sym}`);
         const rawName = input.value.trim();
         if(rawName) {
-            const name = toProperCase(rawName);
+            const name = toProperCase(rawName); // PAKSA PROPER CASE
             if(!coinSources[sym].includes(name)) { 
                 coinSources[sym].push(name); 
                 if(!allExchanges.includes(name)) allExchanges.push(name); 
                 saveAll(); 
                 renderList(); 
+                input.value = "";
             }
             else showToast("Source sudah ada!");
         }
@@ -446,7 +452,7 @@
     function renameSource(sym, oldSrc) {
         const newNameRaw = prompt(`Ubah nama source "${oldSrc}":`, oldSrc);
         if (newNameRaw && newNameRaw.trim() !== "" && newNameRaw !== oldSrc) {
-            const newName = toProperCase(newNameRaw.trim());
+            const newName = toProperCase(newNameRaw.trim()); // PAKSA PROPER CASE
             const idx = coinSources[sym].indexOf(oldSrc);
             if (idx > -1) {
                 coinSources[sym][idx] = newName;
@@ -454,6 +460,10 @@
                     balances[sym][newName] = balances[sym][oldSrc];
                     delete balances[sym][oldSrc];
                 }
+                // Update juga nama di list exchange global kalau cocok
+                const exIdx = allExchanges.indexOf(oldSrc);
+                if(exIdx > -1) allExchanges[exIdx] = newName;
+                
                 saveAll(); renderList();
             }
         }
