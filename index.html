@@ -343,14 +343,54 @@
     async function fetchCoinMap() { try { const r = await fetch('https://api.coingecko.com/api/v3/coins/list'); (await r.json()).forEach(c => { coinMapCG[c.symbol.toUpperCase()] = c.id; }); } catch(e) {} }
 
     async function fetchAll() {
-        if(isFetching) return; isFetching = true;
-        let rem = watchlist.filter(s => !['IDR','USDT','USDC','USD','BUSD'].includes(s));
-        try { const res = await fetch('https://api.bybit.com/v5/market/tickers?category=spot'); const data = await res.json(); if(data.result?.list) { data.result.list.forEach(item => { let sym = item.symbol.replace('USDT',''); if(rem.includes(sym)) { prices[sym] = parseFloat(item.lastPrice); changes[sym] = (parseFloat(item.price24hPcnt) * 100).toFixed(2); rem = rem.filter(c => c !== sym); } }); } } catch(e) {}
-        if(rem.length > 0) { try { const res = await fetch('https://api.binance.com/api/v3/ticker/24hr'); const data = await res.json(); data.forEach(item => { let sym = item.symbol.replace('USDT',''); if(rem.includes(sym)) { prices[sym] = parseFloat(item.lastPrice); changes[sym] = parseFloat(item.priceChangePercent).toFixed(2); rem = rem.filter(c => c !== sym); } }); } catch(e) {} }
-        for (const s of rem) { if (coinMapCG[s]) { try { const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinMapCG[s]}&vs_currencies=usd&include_24hr_change=true`); const d = await r.json(); if(d[coinMapCG[s]]) { prices[s] = d[coinMapCG[s]].usd; changes[s] = d[coinMapCG[s]].usd_24h_change ? d[coinMapCG[s]].usd_24h_change.toFixed(2) : "0.00"; } } catch(e) {} } }
-        watchlist.forEach(s => { if(s === 'IDR') { prices[s] = 1/usdToIdr; changes[s] = "0.00"; } else if(['USDT','USDC','USD','BUSD'].includes(s)) { prices[s] = 1; changes[s] = "0.00"; } else if(!prices[s]) { prices[s] = 0; changes[s] = "0.00"; } });
-        updatePricesOnly(); isFetching = false;
+    if(isFetching) return; isFetching = true;
+    let rem = watchlist.filter(s => !['IDR','USDT','USDC','USD','BUSD'].includes(s));
+
+    // 1. Coba ambil dari Bybit dulu (buat koin mainstream)
+    try { 
+        const res = await fetch('https://api.bybit.com/v5/market/tickers?category=spot'); 
+        const data = await res.json(); 
+        if(data.result?.list) { 
+            data.result.list.forEach(item => { 
+                let sym = item.symbol.replace('USDT',''); 
+                if(rem.includes(sym)) { 
+                    prices[sym] = parseFloat(item.lastPrice); 
+                    changes[sym] = (parseFloat(item.price24hPcnt) * 100).toFixed(2); 
+                    rem = rem.filter(c => c !== sym); 
+                } 
+            }); 
+        } 
+    } catch(e) { console.log("Bybit error"); }
+
+    // 2. Koin yang belum dapet (termasuk koin non-CEX), hajar pake GeckoTerminal
+    if(rem.length > 0) {
+        for (const s of rem) {
+            try {
+                // Kita cari pool paling liquid buat simbol koin tersebut
+                const res = await fetch(`https://api.geckoterminal.com/api/v2/search/pools?query=${s}`);
+                const data = await res.json();
+                
+                if(data.data && data.data.length > 0) {
+                    // Ambil data dari pool pertama (biasanya yang paling relevan/liquid)
+                    const pool = data.data[0].attributes;
+                    prices[s] = parseFloat(pool.base_token_price_usd);
+                    changes[s] = parseFloat(pool.price_change_percentage.h24).toFixed(2);
+                    rem = rem.filter(c => c !== s);
+                }
+            } catch(e) { console.log(`Gagal narik ${s} dari GeckoTerminal`); }
+        }
     }
+
+    // 3. Fallback buat Stablecoin & IDR
+    watchlist.forEach(s => { 
+        if(s === 'IDR') { prices[s] = 1/usdToIdr; changes[s] = "0.00"; } 
+        else if(['USDT','USDC','USD','BUSD'].includes(s)) { prices[s] = 1; changes[s] = "0.00"; } 
+        else if(!prices[s]) { prices[s] = 0; changes[s] = "0.00"; } 
+    });
+
+    updatePricesOnly(); 
+    isFetching = false;
+}
 
     function getCoinTotal(sym) { let t = 0; (coinSources[sym] || []).forEach(src => { const d = balances[sym]?.[src]; t += (typeof d === 'object') ? (parseFloat(d.amount||0) + parseFloat(d.staking||0)) : parseFloat(d||0); }); return t; }
 
