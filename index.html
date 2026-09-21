@@ -42,1141 +42,246 @@
       overscroll-behavior: none;
     }
 
-    /* ── LAYOUT ── */
-    .app-shell {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
 
-    /* STICKY TOP BAR — dimasukkan ke dalam summary-wrap, tidak sticky sendiri */
     .top-bar {
-      background: transparent;
-      padding: 10px 16px 4px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      background: transparent; padding: 10px 16px 4px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-
-    .brand {
-      font-family: var(--mono);
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.12em;
-      flex-shrink: 0;
-    }
+    .brand { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: 0.12em; flex-shrink: 0; }
     .brand span { color: var(--accent); }
+    .kurs-badge { font-family: var(--mono); font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; white-space: nowrap; }
 
-    .kurs-badge {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px 10px;
-      white-space: nowrap;
-    }
-
-    /* STICKY BLOCK UTAMA — mencakup top-bar + summary + controls */
-    .summary-wrap {
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      background: rgba(10,10,15,0.97);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 0 0 0;
-    }
-
-    .summary-card {
-      background: linear-gradient(135deg, #1a1829 0%, #12111c 50%, #0e1420 100%);
-      border: 1px solid var(--accent-border);
-      border-radius: 16px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      box-shadow: 0 0 30px rgba(124,106,247,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
-      margin: 8px 16px 0;
-    }
-
+    .summary-wrap { position: sticky; top: 0; z-index: 200; background: rgba(10,10,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0; }
+    .summary-card { background: linear-gradient(135deg, #1a1829 0%, #12111c 50%, #0e1420 100%); border: 1px solid var(--accent-border); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 0 30px rgba(124,106,247,0.08), inset 0 1px 0 rgba(255,255,255,0.06); margin: 8px 16px 0; }
     .summary-left { flex: 1; min-width: 0; }
-    .summary-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 0.14em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-    .summary-idr {
-      font-family: var(--mono);
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .summary-usd {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
+    .summary-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+    .summary-idr { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .summary-usd { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .summary-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .asset-count { font-family: var(--mono); font-size: 10px; color: var(--accent); background: var(--accent-glow); border: 1px solid var(--accent-border); border-radius: 6px; padding: 3px 8px; }
 
-    .summary-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-    .asset-count {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--accent);
-      background: var(--accent-glow);
-      border: 1px solid var(--accent-border);
-      border-radius: 6px;
-      padding: 3px 8px;
-    }
-
-    /* CONTROLS in sticky area */
-    .controls-wrap {
-      padding: 0 16px 10px;
-      background: rgba(10,10,15,0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .tab-row {
-      display: flex;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 8px;
-      gap: 4px;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--muted);
-      font-family: var(--sans);
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab-btn.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .filter-row {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-    .filter-input {
-      flex: 1;
-      width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 7px 12px;
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 13px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+    .controls-wrap { padding: 0 16px 10px; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); }
+    .tab-row { display: flex; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 8px; gap: 4px; }
+    .tab-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; background: transparent; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+    .filter-row { display: flex; gap: 6px; margin-bottom: 8px; }
+    .filter-input { flex: 1; width: 100%; min-width: 0; box-sizing: border-box; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; color: var(--text); font-family: var(--sans); font-size: 13px; outline: none; transition: border-color 0.2s; }
     .filter-input:focus { border-color: var(--accent-border); }
     .filter-input::placeholder { color: var(--muted); }
+    .sort-row { display: flex; gap: 6px; }
+    .ctrl-select { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--sans); font-size: 11px; padding: 6px 8px; outline: none; cursor: pointer; appearance: none; }
 
-    .sort-row {
-      display: flex;
-      gap: 6px;
-    }
-    .ctrl-select {
-      flex: 1;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      font-family: var(--sans);
-      font-size: 11px;
-      padding: 6px 8px;
-      outline: none;
-      cursor: pointer;
-      appearance: none;
-    }
+    #main-list { padding: 6px 16px 20px; display: flex; flex-direction: column; gap: 6px; }
 
-    /* MAIN LIST */
-    #main-list {
-      padding: 6px 16px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    /* ITEM ROW */
-    .item-wrap {
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--card);
-      transition: border-color 0.2s;
-      animation: fadeUp 0.25s ease both;
-    }
+    .item-wrap { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--card); transition: border-color 0.2s; opacity: 0; }
     .item-wrap:hover { border-color: var(--bh); }
     .item-wrap.expanded { border-color: var(--accent-border); }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    .rise-in { animation: riseIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
-    .item-card {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 14px;
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-    }
+    .item-card { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; user-select: none; }
 
-    .logo-wrap {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
+    /* KONFIGURASI LAPISAN LOGO (ANTI-KEDIP) */
+    .logo-wrap, .src-label-logo, .ex-search-item-logo {
+      position: relative; /* Menahan elemen absolut di dalamnya */
+      width: 36px; height: 36px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); overflow: hidden; flex-shrink: 0;
     }
-    .logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .src-label-logo { width: 20px; height: 20px; }
+    .ex-search-item-logo { width: 26px; height: 26px; }
+
     .logo-initial {
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--accent);
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--accent);
+      z-index: 1; /* Lapis bawah */
+    }
+    .logo-img {
+      position: relative; width: 100%; height: 100%; object-fit: cover;
+      opacity: 0; /* Sengaja transparan dulu */
+      transition: opacity 0.2s ease-in; /* Animasi mulus pas muncul */
+      z-index: 10; /* Lapis atas nutupin tulisan inisial */
     }
 
     .item-info { flex: 1; min-width: 0; }
-    .item-name {
-      font-weight: 600;
-      font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .item-sub {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 1px;
-    }
-    .change-badge {
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 5px;
-      margin-left: 5px;
-    }
+    .item-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .change-badge { font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 5px; margin-left: 5px; }
     .change-badge.up { color: var(--green); background: rgba(34,211,160,0.1); }
     .change-badge.down { color: var(--red); background: rgba(240,93,110,0.1); }
+    .item-val { text-align: right; flex-shrink: 0; }
+    .item-val-main { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+    .item-val-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-    .item-val {
-      text-align: right;
-      flex-shrink: 0;
-    }
-    .item-val-main {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .item-val-sub {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    /* EXPAND DETAIL */
-    .item-detail {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
-      opacity: 0;
-      background: rgba(0,0,0,0.25);
-      border-top: 0px solid var(--border);
-    }
-    .item-detail.open {
-      max-height: 9999px;
-      opacity: 1;
-      border-top-width: 1px;
-    }
-
+    .item-detail { overflow: hidden; max-height: 0; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease; opacity: 0; background: rgba(0,0,0,0.25); border-top: 0px solid var(--border); }
+    .item-detail.open { max-height: 9999px; opacity: 1; border-top-width: 1px; }
     .detail-inner { padding: 10px 14px 12px; }
-
-    /* SOURCE ROW inside detail */
-    .source-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
+    .source-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
     .source-row:last-of-type { border-bottom: none; }
+    .src-label { display: flex; align-items: center; gap: 6px; min-width: 80px; flex-shrink: 0; }
+    .src-label-txt { font-size: 12px; font-weight: 600; color: var(--text); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 56px; }
 
-    .src-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 80px;
-      flex-shrink: 0;
-    }
-    .src-label-logo {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .src-label-logo img { width: 100%; height: 100%; object-fit: cover; }
-    .src-label-txt {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
-      text-transform: uppercase;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 56px;
-    }
-
-    /* Mobile: source row jadi 2 baris - label di atas, input di bawah */
     @media (max-width: 699px) {
-      .source-row {
-        flex-wrap: wrap;
-        gap: 5px;
-      }
-      .src-label {
-        min-width: unset;
-        flex: 1;
-      }
-      .src-label-txt {
-        max-width: 100%;
-        font-size: 11px;
-      }
-      .src-estimate {
-        font-size: 10px;
-        min-width: unset;
-        flex: none;
-      }
+      .source-row { flex-wrap: wrap; gap: 5px; }
+      .src-label { min-width: unset; flex: 1; }
+      .src-label-txt { max-width: 100%; font-size: 11px; }
+      .src-estimate { font-size: 10px; min-width: unset; flex: none; }
       .src-del { margin-left: auto; }
-      .src-inputs {
-        width: 100%;
-        flex: none;
-      }
-      .src-input {
-        flex: 1;
-        width: unset;
-        min-width: 0;
-      }
+      .src-inputs { width: 100%; flex: none; }
+      .src-input { flex: 1; width: unset; min-width: 0; }
     }
-
-    /* Desktop: nama tidak terpotong, max-width lebih besar */
     @media (min-width: 700px) {
-      .src-label-txt {
-        max-width: 120px;
-        font-size: 13px;
-      }
-      .src-label {
-        min-width: 100px;
-      }
+      .src-label-txt { max-width: 120px; font-size: 13px; }
+      .src-label { min-width: 100px; }
       .src-inputs { gap: 8px; }
       .src-input { width: 100px; }
       .src-estimate { min-width: 75px; font-size: 11px; }
     }
 
-    .src-inputs {
-      display: flex;
-      gap: 5px;
-      flex: 1;
-      justify-content: flex-end;
-    }
-    .src-input {
-      width: 90px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 8px;
-      padding: 7px 8px;
-      font-family: var(--mono);
-      font-size: 12px;
-      outline: none;
-      text-align: right;
-      transition: border-color 0.2s;
-      /* DISABLE scroll wheel change on number inputs */
-      -moz-appearance: textfield;
-    }
-    .src-input::-webkit-inner-spin-button,
-    .src-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .src-inputs { display: flex; gap: 5px; flex: 1; justify-content: flex-end; }
+    .src-input { width: 90px; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 7px 8px; font-family: var(--mono); font-size: 12px; outline: none; text-align: right; transition: border-color 0.2s; -moz-appearance: textfield; }
+    .src-input::-webkit-inner-spin-button, .src-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     .src-input:focus { border-color: var(--accent-border); }
     .src-input::placeholder { color: var(--muted); font-size: 11px; }
-
-    .src-estimate {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      text-align: right;
-      min-width: 60px;
-      flex-shrink: 0;
-    }
-
-    .src-del {
-      color: var(--muted);
-      font-size: 18px;
-      cursor: pointer;
-      padding: 0 4px;
-      transition: color 0.2s;
-      flex-shrink: 0;
-    }
+    .src-estimate { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: right; min-width: 60px; flex-shrink: 0; }
+    .src-del { color: var(--muted); font-size: 18px; cursor: pointer; padding: 0 4px; transition: color 0.2s; flex-shrink: 0; }
     .src-del:hover { color: var(--red); }
-
-    .new-src-box {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-    .new-src-input {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 8px 10px;
-      font-family: var(--sans);
-      font-size: 12px;
-      outline: none;
-    }
-    .new-src-btn {
-      background: var(--accent-glow);
-      border: 1px solid var(--accent-border);
-      color: var(--accent);
-      border-radius: 8px;
-      padding: 0 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+    .new-src-box { display: flex; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .new-src-btn { background: var(--accent-glow); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 8px; padding: 0 14px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
     .new-src-btn:hover { background: rgba(124,106,247,0.3); }
 
-    /* BOTTOM BAR */
-    .bottom-bar {
-      position: sticky;
-      bottom: 0;
-      z-index: 200;
-      background: rgba(10,10,15,0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border);
-      padding: 10px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .add-row {
-      display: flex;
-      gap: 8px;
-    }
-    .add-input {
-      flex: 1;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 13px;
-      padding: 10px 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .add-input:focus { border-color: var(--accent-border); }
-    .add-input::placeholder { color: var(--muted); }
-    .add-main-btn {
-      background: var(--accent);
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-family: var(--sans);
-      font-weight: 700;
-      font-size: 13px;
-      padding: 0 18px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
+    .bottom-bar { position: sticky; bottom: 0; z-index: 200; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 10px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .add-row { display: flex; gap: 8px; }
+    .add-main-btn { background: var(--accent); border: none; border-radius: 10px; color: #fff; font-family: var(--sans); font-weight: 700; font-size: 13px; padding: 0 18px; cursor: pointer; transition: opacity 0.2s; }
     .add-main-btn:active { opacity: 0.8; }
-
-    .backup-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      overflow: hidden;
-      max-height: 160px;
-      transition: max-height 0.3s ease, opacity 0.3s ease;
-      opacity: 1;
-    }
-    .backup-row.hidden {
-      max-height: 0;
-      opacity: 0;
-    }
-    .bk-btn-sync-pair {
-      flex: 1 1 100%;
-      display: flex;
-      gap: 5px;
-    }
-    .bk-btn-sync-pair .bk-btn-sync {
-      flex: 1;
-    }
-    .sync-status {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      text-align: center;
-      width: 100%;
-      transition: color 0.3s;
-      padding: 0;
-      margin: -2px 0 0 0;
-      min-height: 0;
-      line-height: 1.2;
-    }
-    .sync-status:empty { display: none; }
-    .sync-status.ok { color: var(--green); }
-    .sync-status.err { color: var(--red); }
-    .sync-status.loading { color: var(--accent); }
-    .bk-btn {
-      flex: 1 1 calc(50% - 2.5px);
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      font-family: var(--sans);
-      font-size: 11px;
-      padding: 7px 6px;
-      cursor: pointer;
-      text-align: center;
-      transition: border-color 0.2s, color 0.2s;
-      white-space: nowrap;
-    }
+    .backup-row { display: flex; flex-wrap: wrap; gap: 5px; overflow: hidden; max-height: 160px; transition: max-height 0.3s ease, opacity 0.3s ease; opacity: 1; }
+    .backup-row.hidden { max-height: 0; opacity: 0; }
+    .bk-btn-sync-pair { flex: 1 1 100%; display: flex; gap: 5px; }
+    .bk-btn-sync-pair .bk-btn-sync { flex: 1; }
+    .bk-btn { flex: 1 1 calc(50% - 2.5px); background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--sans); font-size: 11px; padding: 7px 6px; cursor: pointer; text-align: center; transition: border-color 0.2s, color 0.2s; white-space: nowrap; }
     .bk-btn:hover { border-color: var(--bh); color: var(--text); }
     .bk-btn-full { flex: 1 1 100% !important; border-color: var(--accent-border) !important; color: var(--accent) !important; }
     .bk-btn-danger { color: var(--red) !important; border-color: rgba(240,93,110,0.3) !important; }
     .bk-btn-sync { color: var(--green) !important; border-color: rgba(34,211,160,0.35) !important; background: rgba(34,211,160,0.06) !important; }
-    .bk-btn-sync:hover { background: rgba(34,211,160,0.14) !important; }
-    .bk-btn-sync:disabled { opacity: 0.5; cursor: not-allowed; }
-    .sync-status {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      text-align: center;
-      min-height: 14px;
-      width: 100%;
-      transition: color 0.3s;
-      padding: 2px 0;
-    }
+    .sync-status { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; min-height: 14px; width: 100%; transition: color 0.3s; padding: 2px 0; }
     .sync-status.ok { color: var(--green); }
     .sync-status.err { color: var(--red); }
     .sync-status.loading { color: var(--accent); }
 
-    /* MODAL */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(6px);
-      z-index: 3000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.active { display: flex; }
-    .modal-box {
-      width: 100%;
-      max-width: 340px;
-      background: var(--card2);
-      border: 1px solid var(--accent-border);
-      border-radius: 18px;
-      padding: 22px 20px 18px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(124,106,247,0.1);
-      transform: scale(0.92);
-      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
-    }
+    .modal-box { width: 100%; max-width: 340px; background: var(--card2); border: 1px solid var(--accent-border); border-radius: 18px; padding: 22px 20px 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(124,106,247,0.1); transform: scale(0.92); transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1); }
     .modal-overlay.active .modal-box { transform: scale(1); }
-    .modal-title {
-      font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      text-align: center;
-      margin-bottom: 14px;
-    }
-    .modal-input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--accent-border);
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 14px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      outline: none;
-      text-align: center;
-      margin-bottom: 14px;
-    }
-    .modal-btns {
-      display: flex;
-      gap: 8px;
-    }
-    .modal-btn {
-      flex: 1;
-      padding: 11px 5px;
-      border: none;
-      border-radius: 10px;
-      font-family: var(--sans);
-      font-weight: 700;
-      font-size: 12px;
-      text-transform: uppercase;
-      cursor: pointer;
-      letter-spacing: 0.05em;
-    }
+    .modal-title { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); text-align: center; margin-bottom: 14px; }
+    .modal-input { width: 100%; background: var(--surface); border: 1px solid var(--accent-border); color: var(--text); font-family: var(--mono); font-size: 14px; padding: 12px 14px; border-radius: 10px; outline: none; text-align: center; margin-bottom: 14px; }
+    .modal-btns { display: flex; gap: 8px; }
+    .modal-btn { flex: 1; padding: 11px 5px; border: none; border-radius: 10px; font-family: var(--sans); font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; letter-spacing: 0.05em; }
     .mb-ok { background: var(--accent); color: #fff; }
     .mb-delete { background: rgba(240,93,110,0.2); border: 1px solid rgba(240,93,110,0.4); color: var(--red); }
     .mb-edit { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--muted); }
     .mb-cancel { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); }
 
-    /* TOAST */
-    #toast {
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(240,93,110,0.95);
-      color: #fff;
-      font-family: var(--sans);
-      font-weight: 600;
-      font-size: 12px;
-      padding: 9px 20px;
-      border-radius: 10px;
-      z-index: 4000;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s;
-    }
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(240,93,110,0.95); color: #fff; font-family: var(--sans); font-weight: 600; font-size: 12px; padding: 9px 20px; border-radius: 10px; z-index: 4000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* DESKTOP / LANDSCAPE */
     @media (min-width: 700px) {
       :root { --sidebar-w: 420px; }
-
-      .app-shell {
-        flex-direction: row;
-        min-height: 100vh;
-      }
-
-      /* Left sidebar */
-      .sidebar {
-        width: var(--sidebar-w);
-        flex-shrink: 0;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        overflow-y: auto;
-        background: var(--surface);
-        border-right: 1px solid var(--border);
-        display: flex;
-        flex-direction: column;
-        padding: 24px 22px;
-        gap: 14px;
-      }
+      .app-shell { flex-direction: row; min-height: 100vh; }
+      .sidebar { width: var(--sidebar-w); flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 22px; gap: 14px; }
       .sidebar::-webkit-scrollbar { width: 4px; }
       .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
-
-      .sidebar-brand {
-        font-family: var(--mono);
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--accent);
-        letter-spacing: 0.16em;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+      .sidebar-brand { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 0.16em; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
       .sidebar-brand span { color: var(--accent); }
-      .sidebar-brand .kurs-badge {
-        font-size: 10px;
-        letter-spacing: 0.04em;
-        padding: 5px 10px;
-      }
-
-      .sidebar-stats-label {
-        font-family: var(--mono);
-        font-size: 9px;
-        letter-spacing: 0.12em;
-        color: var(--muted);
-        text-transform: uppercase;
-        margin-bottom: -6px;
-      }
-
-      /* Summary card desktop — lebih besar, lebih web */
-      .sidebar .summary-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 20px 22px;
-        margin: 0;
-        border-radius: 18px;
-      }
-      .sidebar .summary-card .summary-right {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
+      .sidebar-brand .kurs-badge { font-size: 10px; letter-spacing: 0.04em; padding: 5px 10px; }
+      .sidebar-stats-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: -6px; }
+      .sidebar .summary-card { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px 22px; margin: 0; border-radius: 18px; }
+      .sidebar .summary-card .summary-right { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; }
       .sidebar .summary-idr { font-size: 30px; }
       .sidebar .summary-usd { font-size: 13px; }
       .sidebar .summary-label { font-size: 10px; letter-spacing: 0.16em; }
-
-      /* Stats mini row di bawah summary */
-      .sidebar-stats {
-        display: flex;
-        gap: 6px;
-      }
-      .stat-box {
-        flex: 1;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 8px 9px;
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        min-width: 0;
-      }
-      .stat-top-row {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        min-width: 0;
-      }
-      .stat-icon {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        flex-shrink: 0;
-      }
+      .sidebar-stats { display: flex; gap: 6px; }
+      .stat-box { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 8px 9px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+      .stat-top-row { display: flex; align-items: center; gap: 5px; min-width: 0; }
+      .stat-icon { width: 16px; height: 16px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
       .stat-icon img { width: 100%; height: 100%; object-fit: cover; }
-      .stat-icon-txt {
-        font-family: var(--mono);
-        font-size: 7px;
-        font-weight: 700;
-        color: var(--accent);
-      }
-      .stat-sym {
-        font-family: var(--mono);
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--text);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex: 1;
-        min-width: 0;
-      }
-      .stat-price {
-        font-family: var(--mono);
-        font-size: 9px;
-        color: var(--muted);
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .stat-chg {
-        font-family: var(--mono);
-        font-size: 10px;
-        font-weight: 700;
-      }
+      .stat-icon-txt { font-family: var(--mono); font-size: 7px; font-weight: 700; color: var(--accent); }
+      .stat-sym { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+      .stat-price { font-family: var(--mono); font-size: 9px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+      .stat-chg { font-family: var(--mono); font-size: 10px; font-weight: 700; }
       .stat-chg.green { color: var(--green); }
       .stat-chg.red { color: var(--red); }
-
-      .sidebar .kurs-badge {
-        align-self: stretch;
-        text-align: center;
-        padding: 8px;
-        font-size: 11px;
-      }
-
+      .sidebar .kurs-badge { align-self: stretch; text-align: center; padding: 8px; font-size: 11px; }
       .sidebar .tab-row { margin-bottom: 0; }
-
-      /* FIX: filter input lebar sesuai sidebar */
-      .sidebar .filter-input {
-        margin-bottom: 0;
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
-        box-sizing: border-box;
-        flex: none;
-        display: block;
-        padding: 10px 14px;
-        font-size: 13px;
-      }
-
+      .sidebar .filter-input { margin-bottom: 0; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; flex: none; display: block; padding: 10px 14px; font-size: 13px; }
       .sidebar .sort-row { flex-direction: column; gap: 8px; }
       .sidebar .ctrl-select { font-size: 12px; padding: 9px 12px; }
-
-      .sidebar .backup-area {
-        margin-top: auto;
-        padding-top: 16px;
-        border-top: 1px solid var(--border);
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      /* Sync tombol di desktop — satu baris */
-      .sidebar .sync-pair-desk {
-        display: flex;
-        gap: 6px;
-      }
+      .sidebar .backup-area { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+      .sidebar .sync-pair-desk { display: flex; gap: 6px; }
       .sidebar .sync-pair-desk .bk-btn-sync { flex: 1; padding: 9px 6px; }
-
       .sidebar .add-row { flex-direction: column; gap: 8px; }
       .sidebar .add-main-btn { padding: 11px; font-size: 14px; }
-
-      /* Hide mobile sticky elements */
       .top-bar { display: none; }
       .summary-wrap { display: none; }
       .bottom-bar { display: none; }
-
-      /* Main content */
-      .main-content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 28px 28px 40px;
-        background: var(--bg);
-      }
+      .main-content { flex: 1; overflow-y: auto; padding: 28px 28px 40px; background: var(--bg); }
       .main-content::-webkit-scrollbar { width: 5px; }
       .main-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 4px; }
+      .desktop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+      .desktop-header-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
+      .desktop-header-count { font-family: var(--mono); font-size: 11px; color: var(--accent); background: var(--accent-glow); border: 1px solid var(--accent-border); border-radius: 6px; padding: 4px 10px; }
+      .item-name { white-space: normal; overflow: visible; text-overflow: unset; }
+      #main-list { padding: 0; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 8px; }
+    }
+    @media (max-width: 699px) { .sidebar { display: none; } .main-content { width: 100%; } }
 
-      /* Header di main content desktop */
-      .desktop-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--border);
-      }
-      .desktop-header-title {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.14em;
-        color: var(--muted);
-        text-transform: uppercase;
-      }
-      .desktop-header-count {
-        font-family: var(--mono);
-        font-size: 11px;
-        color: var(--accent);
-        background: var(--accent-glow);
-        border: 1px solid var(--accent-border);
-        border-radius: 6px;
-        padding: 4px 10px;
-      }
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--muted); }
+    .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state p { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; }
 
-      /* Desktop: nama item tidak terpotong */
-      .item-name {
-        white-space: normal;
-        overflow: visible;
-        text-overflow: unset;
-      }
-
-      #main-list {
-        padding: 0;
-        max-width: 1100px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-    }
-
-    @media (max-width: 699px) {
-      .sidebar { display: none; }
-      .main-content { width: 100%; }
-    }
-
-    /* EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      color: var(--muted);
-    }
-    .empty-state .empty-icon {
-      font-size: 40px;
-      margin-bottom: 12px;
-    }
-    .empty-state p {
-      font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.08em;
-    }
-    /* COIN SEARCH MODAL */
-    .coin-search-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(6px);
-      z-index: 3500;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+    .coin-search-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3500; align-items: center; justify-content: center; padding: 20px; }
     .coin-search-overlay.active { display: flex; }
-    .coin-search-box {
-      width: 100%;
-      max-width: 420px;
-      background: var(--card2);
-      border: 1px solid var(--accent-border);
-      border-radius: 20px;
-      padding: 22px 20px 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(124,106,247,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transform: scale(0.93);
-      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
-      max-height: 80vh;
-    }
+    .coin-search-box { width: 100%; max-width: 420px; background: var(--card2); border: 1px solid var(--accent-border); border-radius: 20px; padding: 22px 20px 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(124,106,247,0.1); display: flex; flex-direction: column; gap: 12px; transform: scale(0.93); transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1); max-height: 80vh; }
     .coin-search-overlay.active .coin-search-box { transform: scale(1); }
-    .coin-search-title {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      text-align: center;
-    }
-    .coin-search-input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--accent-border);
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 14px;
-      padding: 11px 14px;
-      border-radius: 12px;
-      outline: none;
-    }
+    .coin-search-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); text-align: center; }
+    .coin-search-input { width: 100%; background: var(--surface); border: 1px solid var(--accent-border); color: var(--text); font-family: var(--sans); font-size: 14px; padding: 11px 14px; border-radius: 12px; outline: none; }
     .coin-search-input::placeholder { color: var(--muted); }
-    .coin-search-results {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-height: 0;
-      max-height: 320px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-    .coin-search-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 11px;
-      border-radius: 10px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: background 0.15s, border-color 0.15s;
-    }
+    .coin-search-results { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; min-height: 0; max-height: 320px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .coin-search-item { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 10px; cursor: pointer; border: 1px solid transparent; transition: background 0.15s, border-color 0.15s; }
     .coin-search-item:hover { background: var(--surface); border-color: var(--border); }
     .coin-search-item.already { opacity: 0.4; pointer-events: none; }
-    .coin-search-thumb {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      object-fit: cover;
-      flex-shrink: 0;
-    }
+    
+    .coin-search-thumb { width: 28px; height: 28px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); object-fit: cover; flex-shrink: 0; }
+    
     .coin-search-name { font-size: 13px; font-weight: 500; }
     .coin-search-sym { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-    .coin-search-cancel {
-      width: 100%;
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      color: var(--muted);
-      cursor: pointer;
-      font-family: var(--sans);
-      font-size: 13px;
-      transition: border-color 0.2s, color 0.2s;
-    }
+    .coin-search-cancel { width: 100%; background: none; border: 1px solid var(--border); border-radius: 12px; padding: 10px; color: var(--muted); cursor: pointer; font-family: var(--sans); font-size: 13px; transition: border-color 0.2s, color 0.2s; }
     .coin-search-cancel:hover { border-color: var(--bh); color: var(--text); }
-    .coin-search-loading {
-      text-align: center;
-      padding: 20px;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 12px;
-    }
-    /* EXCHANGE SEARCH MODAL */
-    .ex-search-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(6px);
-      z-index: 3500;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+    .coin-search-loading { text-align: center; padding: 20px; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+
+    .ex-search-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3500; align-items: center; justify-content: center; padding: 20px; }
     .ex-search-overlay.active { display: flex; }
-    .ex-search-box {
-      width: 100%;
-      max-width: 380px;
-      background: var(--card2);
-      border: 1px solid var(--accent-border);
-      border-radius: 20px;
-      padding: 22px 20px 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transform: scale(0.93);
-      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
-    }
+    .ex-search-box { width: 100%; max-width: 380px; background: var(--card2); border: 1px solid var(--accent-border); border-radius: 20px; padding: 22px 20px 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 10px; transform: scale(0.93); transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1); }
     .ex-search-overlay.active .ex-search-box { transform: scale(1); }
-    .ex-search-title {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      text-align: center;
-    }
-    .ex-search-input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--accent-border);
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 14px;
-      padding: 11px 14px;
-      border-radius: 12px;
-      outline: none;
-      text-transform: uppercase;
-    }
+    .ex-search-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); text-align: center; }
+    .ex-search-input { width: 100%; background: var(--surface); border: 1px solid var(--accent-border); color: var(--text); font-family: var(--sans); font-size: 14px; padding: 11px 14px; border-radius: 12px; outline: none; text-transform: uppercase; }
     .ex-search-input::placeholder { color: var(--muted); font-size: 13px; text-transform: none; }
-    .ex-search-results {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      max-height: 220px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-    .ex-search-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: background 0.15s, border-color 0.15s;
-    }
+    .ex-search-results { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .ex-search-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; cursor: pointer; border: 1px solid transparent; transition: background 0.15s, border-color 0.15s; }
     .ex-search-item:hover { background: var(--surface); border-color: var(--border); }
-    .ex-search-item.new-entry {
-      border-color: rgba(124,106,247,0.3);
-      background: var(--accent-glow);
-      color: var(--accent);
-    }
-    .ex-search-item-logo {
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden; flex-shrink: 0;
-    }
+    .ex-search-item.new-entry { border-color: rgba(124,106,247,0.3); background: var(--accent-glow); color: var(--accent); }
+    .ex-search-item-logo { width: 26px; height: 26px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
     .ex-search-item-logo img { width: 100%; height: 100%; object-fit: cover; }
     .ex-search-item-logo-txt { font-family: var(--mono); font-size: 8px; font-weight: 700; color: var(--accent); }
     .ex-search-item-name { font-size: 13px; font-weight: 600; }
     .ex-search-item-sub { font-size: 11px; color: var(--muted); }
-    .ex-search-cancel {
-      width: 100%;
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      color: var(--muted);
-      cursor: pointer;
-      font-family: var(--sans);
-      font-size: 13px;
-      transition: border-color 0.2s, color 0.2s;
-    }
+    .ex-search-cancel { width: 100%; background: none; border: 1px solid var(--border); border-radius: 12px; padding: 10px; color: var(--muted); cursor: pointer; font-family: var(--sans); font-size: 13px; transition: border-color 0.2s, color 0.2s; }
     .ex-search-cancel:hover { border-color: var(--bh); color: var(--text); }
-
-    /* ADD EXCHANGE MODAL - simple input */
-    .add-ex-modal { gap: 14px; }
   </style>
 </head>
 <body>
 
-<!-- MODAL -->
 <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div id="modal-title" class="modal-title"></div>
@@ -1185,7 +290,6 @@
   </div>
 </div>
 
-<!-- COIN SEARCH MODAL -->
 <div id="coin-search-overlay" class="coin-search-overlay" onclick="closeCoinSearch()">
   <div class="coin-search-box" onclick="event.stopPropagation()">
     <div class="coin-search-title" id="coin-search-title">Tambah Koin</div>
@@ -1197,7 +301,6 @@
   </div>
 </div>
 
-<!-- EXCHANGE SEARCH MODAL (untuk tambah source di coin expand) -->
 <div id="ex-search-overlay" class="ex-search-overlay" onclick="closeExSearch()">
   <div class="ex-search-box" onclick="event.stopPropagation()">
     <div class="ex-search-title">Tambah ke Exchange</div>
@@ -1213,15 +316,11 @@
 <input type="file" id="importFile" style="display:none" accept=".json" onchange="handleFileSelect(event)">
 
 <div class="app-shell">
-
-  <!-- ═══════ SIDEBAR (desktop only) ═══════ -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <span>PORTO</span>
       <div id="kurs-live-desk" class="kurs-badge">USD/IDR: ...</div>
     </div>
-
-    <!-- summary -->
     <div class="summary-card">
       <div class="summary-left">
         <div class="summary-label">Total Saldo</div>
@@ -1232,25 +331,17 @@
         <div id="asset-count-badge-desk" class="asset-count">0 exchange</div>
       </div>
     </div>
-
-    <!-- stats mini: 3 top gainers -->
     <div class="sidebar-stats-label">🔥 Top Gainer</div>
     <div class="sidebar-stats" id="sidebar-top-gainers">
       <div class="stat-box"><div class="stat-label">-</div><div class="stat-val">-</div></div>
       <div class="stat-box"><div class="stat-label">-</div><div class="stat-val">-</div></div>
       <div class="stat-box"><div class="stat-label">-</div><div class="stat-val">-</div></div>
     </div>
-
-    <!-- tabs -->
     <div class="tab-row">
       <button id="tab-ex-d" class="tab-btn active" onclick="switchTab('exchange')">Exchange</button>
       <button id="tab-coin-d" class="tab-btn" onclick="switchTab('coin')">Coin</button>
     </div>
-
-    <!-- filter -->
     <input type="text" class="filter-input" id="filter-desk" placeholder="Cari..." oninput="renderList()">
-
-    <!-- sort -->
     <div class="sort-row">
       <select id="sort-order-desk" class="ctrl-select" onchange="updateSettings('desk')">
         <option value="manual">Urutan: Default</option>
@@ -1263,13 +354,9 @@
         <option value="USD">Mata Uang: USD</option>
       </select>
     </div>
-
-    <!-- add — satu tombol dinamis -->
     <div class="add-row">
       <button class="add-main-btn" style="width:100%;padding:11px" id="global-add-btn-desk" onclick="handleGlobalAdd()">+ Tambah Exchange</button>
     </div>
-
-    <!-- backup -->
     <div class="backup-area">
       <div class="sync-pair-desk">
         <button class="bk-btn bk-btn-sync" onclick="syncPushWithPin()">☁️ Simpan ke Cloud</button>
@@ -1284,16 +371,11 @@
     </div>
   </aside>
 
-  <!-- ═══════ MAIN CONTENT ═══════ -->
   <div class="main-content">
-
-    <!-- MOBILE: Top Bar -->
     <div class="top-bar">
       <div class="brand">PORT<span>O</span></div>
       <div id="kurs-live" class="kurs-badge">USD/IDR: ...</div>
     </div>
-
-    <!-- MOBILE: Sticky Summary + Controls (satu block sticky) -->
     <div class="summary-wrap">
       <div class="summary-card">
         <div class="summary-left">
@@ -1305,7 +387,6 @@
           <div id="asset-count-badge" class="asset-count">0 aset</div>
         </div>
       </div>
-      <!-- Controls langsung di dalam sticky block yang sama -->
       <div class="controls-wrap">
         <div class="tab-row">
           <button id="tab-ex" class="tab-btn active" onclick="switchTab('exchange')">Exchange</button>
@@ -1329,10 +410,9 @@
       </div>
     </div>
 
-    <!-- LIST -->
+    <!-- MAIN LIST CONTENT -->
     <div id="main-list"></div>
 
-    <!-- MOBILE: Bottom Bar -->
     <div class="bottom-bar">
       <div class="add-row">
         <button class="add-main-btn" style="width:100%;padding:11px" id="global-add-btn-mob" onclick="handleGlobalAdd()">+ Tambah Exchange</button>
@@ -1350,24 +430,41 @@
         <button class="bk-btn bk-btn-full" onclick="confirmModal('IMPORT DAN GABUNG?','ok',()=>openFilePicker('import'))">📥 Import & Gabung</button>
       </div>
     </div>
-
-  </div><!-- /main-content -->
-</div><!-- /app-shell -->
+  </div>
+</div>
 
 <script>
-// ══════════════════════════════
-//  COIN SEARCH MODAL
-// ══════════════════════════════
 let cgList = [];
-let coinSearchTarget = null; // { type: 'global' | 'exchange', exchange: 'BINANCE' }
+let coinSearchTarget = null; 
 
-function logoSrcs(sym) {
+function getLogoSrcs(sym) {
   const s = sym.toLowerCase();
+  const cgId = coinMapCG[sym] || s;
   return [
     `https://gate.io/images/coin_icon/64/${s}.png`,
     `https://assets.coincap.io/assets/icons/${s}@2x.png`,
     `https://static.okx.com/cdn/oksupport/asset/currency/icon/${s}.png`,
+    `https://assets.coingecko.com/coins/images/1/small/${cgId}.png`,
+    `https://coinicons-api.vercel.app/api/icon/${s}`,
+    `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${s}.png`
   ];
+}
+
+/* FUNGSI HANDLE LOGO - MENGGUNAKAN LAYER ANTI KEDIP */
+function handleLogoError(img, sym) {
+  if (sym === 'IDR') return;
+  // Index dapet dari percobaan sebelumnya
+  const retry = parseInt(img.getAttribute('data-retry') || '1');
+  const sources = getLogoSrcs(sym);
+  
+  if (retry < sources.length) { 
+    img.setAttribute('data-retry', retry + 1); 
+    img.src = sources[retry]; 
+  } else { 
+    // Gagal total dari semua link cadangan
+    // Buang img (layer atas) tanpa suara, biarkan layer bawah (tulisan inisial) yg kelihatan
+    img.remove();
+  }
 }
 
 function openCoinSearch(type, exchange) {
@@ -1386,7 +483,6 @@ function closeCoinSearch() {
 }
 
 async function loadCGList() {
-  // Cek cache dulu, kalau masih fresh (< 24 jam) pakai cache
   try {
     const cached = localStorage.getItem('cg_coin_list');
     const cachedTs = parseInt(localStorage.getItem('cg_coin_list_ts') || '0');
@@ -1398,8 +494,7 @@ async function loadCGList() {
     }
   } catch(e) {}
 
-  document.getElementById('coin-search-results').innerHTML =
-    '<div class="coin-search-loading">Memuat daftar koin...</div>';
+  document.getElementById('coin-search-results').innerHTML = '<div class="coin-search-loading">Memuat daftar koin...</div>';
   try {
     const r = await fetch('https://api.coingecko.com/api/v3/coins/list?include_platform=false');
     cgList = await r.json();
@@ -1410,7 +505,6 @@ async function loadCGList() {
     } catch(e) {}
     filterCoinSearch();
   } catch {
-    // Kalau gagal tapi ada cache lama, tetap pakai
     try {
       const cached = localStorage.getItem('cg_coin_list');
       if (cached) {
@@ -1420,8 +514,7 @@ async function loadCGList() {
         return;
       }
     } catch(e) {}
-    document.getElementById('coin-search-results').innerHTML =
-      '<div class="coin-search-loading" style="color:var(--red)">Gagal memuat. Cek koneksi.</div>';
+    document.getElementById('coin-search-results').innerHTML = '<div class="coin-search-loading" style="color:var(--red)">Gagal memuat. Cek koneksi.</div>';
   }
 }
 
@@ -1433,19 +526,12 @@ function filterCoinSearch() {
       const qU = q.toUpperCase();
       box.innerHTML = `<div class="coin-search-item" onclick="pickCoinFromSearch('${q}','${qU}','${q}')">
         <div class="coin-search-thumb" style="background:var(--accent); display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:bold;">+</div>
-        <div>
-          <div class="coin-search-name">Tambah Koin Kustom "${qU}"</div>
-          <div class="coin-search-sym">${qU}</div>
-        </div>
+        <div><div class="coin-search-name">Tambah Koin Kustom "${qU}"</div><div class="coin-search-sym">${qU}</div></div>
       </div>`;
     }
     return;
   }
-
-  let hits = q
-    ? cgList.filter(c => c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q))
-    : cgList.slice(0, 60);
-
+  let hits = q ? cgList.filter(c => c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q)) : cgList.slice(0, 60);
   if (q) {
     hits.sort((a, b) => {
       const rank = x => x === q ? 0 : x.startsWith(q) ? 1 : 2;
@@ -1455,77 +541,46 @@ function filterCoinSearch() {
     });
     hits = hits.slice(0, 60);
   }
-
   const targetEx = coinSearchTarget?.exchange;
-  const alreadyInTarget = targetEx
-    ? new Set(watchlist.filter(s => coinSources[s]?.includes(targetEx)))
-    : new Set(watchlist);
-
+  const alreadyInTarget = targetEx ? new Set(watchlist.filter(s => coinSources[s]?.includes(targetEx))) : new Set(watchlist);
   let html = hits.map(c => {
     const symU = c.symbol.toUpperCase();
     const isAdded = alreadyInTarget.has(symU);
-    const src = logoSrcs(c.symbol)[0];
+    const src = getLogoSrcs(c.symbol)[0];
     const safeId   = c.id.replace(/'/g,"\\'");
     const safeName = c.name.replace(/'/g,"\\'");
     const safeSym  = c.symbol.replace(/'/g,"\\'");
-    return `<div class="coin-search-item ${isAdded ? 'already' : ''}"
-      onclick="${isAdded ? '' : `pickCoinFromSearch('${safeId}','${safeName}','${safeSym}')`}">
-      <img class="coin-search-thumb" src="${src}"
-        onerror="this.src='';this.style.background='var(--surface)'">
-      <div>
-        <div class="coin-search-name">${c.name}</div>
-        <div class="coin-search-sym">${symU}${isAdded ? ' · sudah di exchange ini' : ''}</div>
-      </div>
+    return `<div class="coin-search-item ${isAdded ? 'already' : ''}" onclick="${isAdded ? '' : `pickCoinFromSearch('${safeId}','${safeName}','${safeSym}')`}">
+      <img class="coin-search-thumb" src="${src}" onerror="this.src='';this.style.background='var(--surface)'">
+      <div><div class="coin-search-name">${c.name}</div><div class="coin-search-sym">${symU}${isAdded ? ' · sudah di exchange ini' : ''}</div></div>
     </div>`;
   }).join('');
-
   if (q) {
     const qU = q.toUpperCase();
     const isAddedCustom = alreadyInTarget.has(qU);
     html += `<div class="coin-search-item ${isAddedCustom ? 'already' : ''}" onclick="${isAddedCustom ? '' : `pickCoinFromSearch('${q}','${qU}','${q}')`}">
       <div class="coin-search-thumb" style="background:var(--accent-border); display:flex; align-items:center; justify-content:center; color:var(--text); font-size:12px; font-weight:bold;">+</div>
-      <div>
-        <div class="coin-search-name">Buat Koin Kustom "${qU}"</div>
-        <div class="coin-search-sym">${qU}${isAddedCustom ? ' · sudah ada' : ''}</div>
-      </div>
+      <div><div class="coin-search-name">Buat Koin Kustom "${qU}"</div><div class="coin-search-sym">${qU}${isAddedCustom ? ' · sudah ada' : ''}</div></div>
     </div>`;
   }
-
-  if (!hits.length && !q) {
-    box.innerHTML = '<div class="coin-search-loading">Tidak ditemukan.</div>';
-  } else {
-    box.innerHTML = html;
-  }
+  box.innerHTML = (!hits.length && !q) ? '<div class="coin-search-loading">Tidak ditemukan.</div>' : html;
 }
 
 function pickCoinFromSearch(id, name, sym) {
   const symU = sym.toUpperCase();
-  // Simpan target SEBELUM closeCoinSearch() karena closeCoinSearch set coinSearchTarget = null
   const target = coinSearchTarget;
   closeCoinSearch();
-
-  if (!watchlist.includes(symU)) {
-    watchlist.push(symU);
-    coinSources[symU] = [];
-    coinMapCG[symU] = id;
-  }
-
+  if (!watchlist.includes(symU)) { watchlist.push(symU); coinSources[symU] = []; coinMapCG[symU] = id; }
   if (target?.type === 'exchange' && target.exchange) {
     const ex = target.exchange;
     if (!coinSources[symU].includes(ex)) coinSources[symU].push(ex);
     if (!allExchanges.includes(ex)) allExchanges.push(ex);
-    // Pastikan exchange tetap ter-expand setelah renderList
     expandedItem = ex;
   }
-
   saveAll(); renderList(); fetchAll();
 }
 
-// ══════════════════════════════
-//  EXCHANGE SEARCH MODAL
-// ══════════════════════════════
-let exSearchTarget = null; // sym koin yang mau ditambahin source-nya
-
+let exSearchTarget = null;
 function openExSearch(sym) {
   exSearchTarget = sym;
   document.getElementById('ex-search-input').value = '';
@@ -1533,341 +588,140 @@ function openExSearch(sym) {
   document.getElementById('ex-search-overlay').classList.add('active');
   setTimeout(() => document.getElementById('ex-search-input').focus(), 150);
 }
-
-function closeExSearch() {
-  document.getElementById('ex-search-overlay').classList.remove('active');
-  exSearchTarget = null;
-}
-
+function closeExSearch() { document.getElementById('ex-search-overlay').classList.remove('active'); exSearchTarget = null; }
 function filterExSearch() {
   const q = document.getElementById('ex-search-input').value.trim().toUpperCase();
   const box = document.getElementById('ex-search-results');
   const sym = exSearchTarget;
-
-  // Exchange yang sudah jadi source di koin ini
   const alreadySource = new Set(coinSources[sym] || []);
-
-  // Filter dari allExchanges
   const matched = allExchanges.filter(ex => !alreadySource.has(ex) && (q === '' || ex.includes(q)));
-
   let html = matched.map(ex => {
     const brand = ex.split(' ')[0];
     const logo = exchangeLogos[brand] || '';
     return `<div class="ex-search-item" onclick="pickExFromSearch('${ex}')">
-      <div class="ex-search-item-logo">
-        ${logo
-          ? `<img src="${logo}" onerror="this.parentElement.innerHTML='<span class=ex-search-item-logo-txt>${brand.substring(0,2)}</span>'">`
-          : `<span class="ex-search-item-logo-txt">${brand.substring(0,2)}</span>`}
-      </div>
-      <div>
-        <div class="ex-search-item-name">${ex}</div>
-      </div>
+      <div class="ex-search-item-logo">${logo ? `<img src="${logo}" onerror="this.parentElement.innerHTML='<span class=ex-search-item-logo-txt>${brand.substring(0,2)}</span>'">` : `<span class="ex-search-item-logo-txt">${brand.substring(0,2)}</span>`}</div>
+      <div><div class="ex-search-item-name">${ex}</div></div>
     </div>`;
   }).join('');
-
-  // Opsi buat baru kalau ada teks dan belum ada yang exact match
   if (q && !allExchanges.includes(q) && !alreadySource.has(q)) {
     html += `<div class="ex-search-item new-entry" onclick="pickExFromSearch('${q}')">
       <div class="ex-search-item-logo"><span class="ex-search-item-logo-txt">+</span></div>
-      <div>
-        <div class="ex-search-item-name">Buat baru: "${q}"</div>
-        <div class="ex-search-item-sub">Exchange baru akan ditambahkan</div>
-      </div>
+      <div><div class="ex-search-item-name">Buat baru: "${q}"</div><div class="ex-search-item-sub">Exchange baru akan ditambahkan</div></div>
     </div>`;
   }
-
-  if (!html) {
-    html = `<div style="text-align:center;padding:16px;color:var(--muted);font-family:var(--mono);font-size:11px">
-      Ketik nama exchange...
-    </div>`;
-  }
-
-  box.innerHTML = html;
+  box.innerHTML = html || `<div style="text-align:center;padding:16px;color:var(--muted);font-family:var(--mono);font-size:11px">Ketik nama exchange...</div>`;
 }
-
 function pickExFromSearch(ex) {
-  const sym = exSearchTarget;
-  closeExSearch();
-  if (!sym) return;
-
+  const sym = exSearchTarget; closeExSearch(); if (!sym) return;
   const exU = ex.toUpperCase();
   if (!allExchanges.includes(exU)) allExchanges.push(exU);
   if (!coinSources[sym]) coinSources[sym] = [];
   if (!coinSources[sym].includes(exU)) coinSources[sym].push(exU);
-
   saveAll(); renderList();
 }
-
 
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycby2sWFj_-Altg7u7OcxWT-CxdMJzJhzJlOvhIK3QDt00dGUpklVrgZPXB-BZxAdmFKMjA/exec';
 const SYNC_PIN = 'SATRIA';
 
-function setSyncStatus(msg, type) {
-  ['sync-status-desk','sync-status-mob'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerText = msg;
-    el.className = 'sync-status ' + (type || '');
-  });
-}
-
-// Simpan ke cloud — pakai PIN
+function setSyncStatus(msg, type) { ['sync-status-desk','sync-status-mob'].forEach(id => { const el = document.getElementById(id); if (!el) return; el.innerText = msg; el.className = 'sync-status ' + (type || ''); }); }
 function syncPushWithPin() {
-  const overlay = document.getElementById('modal-overlay');
-  const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = '🔐 MASUKKAN SANDI';
-  inp.style.display = 'block';
-  inp.type = 'password';
-  inp.value = '';
-  inp.placeholder = 'Sandi...';
-  document.getElementById('modal-btns').innerHTML = `
-    <button class="modal-btn mb-ok" id="btn-pin-ok">SIMPAN</button>
-    <button class="modal-btn mb-cancel" onclick="closeModal();document.getElementById('modal-input').type='text'">BATAL</button>`;
+  const overlay = document.getElementById('modal-overlay'); const inp = document.getElementById('modal-input');
+  document.getElementById('modal-title').innerText = '🔐 MASUKKAN SANDI'; inp.style.display = 'block'; inp.type = 'password'; inp.value = ''; inp.placeholder = 'Sandi...';
+  document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-pin-ok">SIMPAN</button><button class="modal-btn mb-cancel" onclick="closeModal();document.getElementById('modal-input').type='text'">BATAL</button>`;
   document.getElementById('btn-pin-ok').onclick = () => {
-    if (inp.value.toUpperCase() === SYNC_PIN) {
-      inp.type = 'text'; closeModal(); syncPush();
-    } else {
-      inp.value = '';
-      inp.placeholder = '❌ Sandi salah, coba lagi';
-      inp.style.borderColor = 'var(--red)';
-      setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = 'Sandi...'; }, 1500);
-    }
+    if (inp.value.toUpperCase() === SYNC_PIN) { inp.type = 'text'; closeModal(); syncPush(); }
+    else { inp.value = ''; inp.placeholder = '❌ Sandi salah, coba lagi'; inp.style.borderColor = 'var(--red)'; setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = 'Sandi...'; }, 1500); }
   };
   inp.onkeypress = (e) => { if (e.key === 'Enter') document.getElementById('btn-pin-ok')?.click(); };
-  overlay.classList.add('active');
-  setTimeout(() => inp.focus(), 200);
+  overlay.classList.add('active'); setTimeout(() => inp.focus(), 200);
 }
 
-// Ambil dari cloud — pakai confirm peringatan
 function syncPullWithConfirm() {
-  const overlay = document.getElementById('modal-overlay');
-  const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = '⚠️ AMBIL DATA DARI CLOUD?';
-  inp.style.display = 'none';
-  document.getElementById('modal-btns').innerHTML = `
-    <div style="width:100%;text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">
-      Data lokal akan diganti dengan data dari cloud.<br>Pastikan data cloud sudah tersimpan dengan benar.
-    </div>
-    <button class="modal-btn mb-ok" id="btn-pull-ok">AMBIL</button>
-    <button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
-  document.getElementById('btn-pull-ok').onclick = () => { closeModal(); syncPull(); };
-  overlay.classList.add('active');
+  const overlay = document.getElementById('modal-overlay'); const inp = document.getElementById('modal-input');
+  document.getElementById('modal-title').innerText = '⚠️ AMBIL DATA DARI CLOUD?'; inp.style.display = 'none';
+  document.getElementById('modal-btns').innerHTML = `<div style="width:100%;text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">Data lokal akan diganti dengan data dari cloud.<br>Pastikan data cloud sudah tersimpan dengan benar.</div><button class="modal-btn mb-ok" id="btn-pull-ok">AMBIL</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
+  document.getElementById('btn-pull-ok').onclick = () => { closeModal(); syncPull(); }; overlay.classList.add('active');
 }
 
 async function syncPush() {
-  setSyncStatus('⏳ Menyimpan...', 'loading');
-  document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = true);
+  setSyncStatus('⏳ Menyimpan...', 'loading'); document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = true);
   try {
     const payload = { assets: watchlist, balances, sources: coinSources, exchanges: allExchanges };
-    const res = await fetch(SYNC_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const json = await res.json();
-    if (json.status === 'ok') {
-      const t = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
-      setSyncStatus('✅ Tersimpan ' + t, 'ok');
-      showToast('✅ Data berhasil disimpan ke cloud!');
-    } else throw new Error(json.message || 'Error');
-  } catch (err) {
-    setSyncStatus('❌ Gagal simpan', 'err');
-    showToast('❌ Gagal simpan ke cloud!');
-  }
+    const res = await fetch(SYNC_URL, { method: 'POST', body: JSON.stringify(payload) }); const json = await res.json();
+    if (json.status === 'ok') { const t = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'}); setSyncStatus('✅ Tersimpan ' + t, 'ok'); showToast('✅ Data berhasil disimpan ke cloud!'); }
+    else throw new Error(json.message || 'Error');
+  } catch (err) { setSyncStatus('❌ Gagal simpan', 'err'); showToast('❌ Gagal simpan ke cloud!'); }
   document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = false);
 }
 
 async function syncPull() {
-  setSyncStatus('⏳ Mengambil...', 'loading');
-  document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = true);
+  setSyncStatus('⏳ Mengambil...', 'loading'); document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = true);
   try {
-    const res = await fetch(SYNC_URL + '?t=' + Date.now());
-    const json = await res.json();
+    const res = await fetch(SYNC_URL + '?t=' + Date.now()); const json = await res.json();
     if (json.status === 'ok' && json.data) {
-      const d = json.data;
-      watchlist   = d.assets    || [];
-      balances    = d.balances  || {};
-      coinSources = d.sources   || {};
-      allExchanges= d.exchanges || [];
-      migrateToUppercase(); saveAll(); renderList(); fetchAll();
-      setSyncStatus('✅ Diperbarui ' + (json.lastUpdate || ''), 'ok');
-      showToast('✅ Data berhasil diambil dari cloud!');
-    } else if (json.status === 'empty') {
-      setSyncStatus('⚠️ Cloud masih kosong', 'err');
-      showToast('⚠️ Belum ada data di cloud. Simpan dulu!');
-    } else throw new Error(json.message || 'Error');
-  } catch (err) {
-    setSyncStatus('❌ Gagal ambil', 'err');
-    showToast('❌ Gagal ambil dari cloud!');
-  }
+      const d = json.data; watchlist = d.assets || []; balances = d.balances || {}; coinSources = d.sources || {}; allExchanges= d.exchanges || [];
+      migrateToUppercase(); saveAll(); renderList(); fetchAll(); setSyncStatus('✅ Diperbarui ' + (json.lastUpdate || ''), 'ok'); showToast('✅ Data berhasil diambil dari cloud!');
+    } else if (json.status === 'empty') { setSyncStatus('⚠️ Cloud masih kosong', 'err'); showToast('⚠️ Belum ada data di cloud. Simpan dulu!'); }
+    else throw new Error(json.message || 'Error');
+  } catch (err) { setSyncStatus('❌ Gagal ambil', 'err'); showToast('❌ Gagal ambil dari cloud!'); }
   document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = false);
 }
 
-// ══════════════════════════════
-//  MODAL
-// ══════════════════════════════
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('active');
-  document.getElementById('modal-input').style.display = 'none';
-}
-
+function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); document.getElementById('modal-input').style.display = 'none'; }
 function confirmModal(msg, type, onOk, onEdit = null) {
-  const overlay = document.getElementById('modal-overlay');
-  document.getElementById('modal-title').innerText = msg;
-  const inp = document.getElementById('modal-input');
-  inp.style.display = 'none';
-  let btns = '';
-  if (type === 'delete') {
-    btns = `<button class="modal-btn mb-delete" id="btn-ok">HAPUS</button>`;
-    if (onEdit) btns += `<button class="modal-btn mb-edit" id="btn-edit">EDIT</button>`;
-    btns += `<button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
-  } else {
-    btns = `<button class="modal-btn mb-ok" id="btn-ok">OKE</button>`;
-    btns += `<button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
-  }
-  document.getElementById('modal-btns').innerHTML = btns;
-  document.getElementById('btn-ok').onclick = () => { closeModal(); onOk(); };
-  if (onEdit) document.getElementById('btn-edit').onclick = () => { closeModal(); onEdit(); };
-  overlay.classList.add('active');
+  const overlay = document.getElementById('modal-overlay'); document.getElementById('modal-title').innerText = msg;
+  const inp = document.getElementById('modal-input'); inp.style.display = 'none'; let btns = '';
+  if (type === 'delete') { btns = `<button class="modal-btn mb-delete" id="btn-ok">HAPUS</button>`; if (onEdit) btns += `<button class="modal-btn mb-edit" id="btn-edit">EDIT</button>`; btns += `<button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`; }
+  else { btns = `<button class="modal-btn mb-ok" id="btn-ok">OKE</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`; }
+  document.getElementById('modal-btns').innerHTML = btns; document.getElementById('btn-ok').onclick = () => { closeModal(); onOk(); };
+  if (onEdit) document.getElementById('btn-edit').onclick = () => { closeModal(); onEdit(); }; overlay.classList.add('active');
 }
-
 function openBackupPopup() {
-  const now = new Date();
-  const ts = `PORTO_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
-  const overlay = document.getElementById('modal-overlay');
-  const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = 'SIMPAN BACKUP';
-  inp.style.display = 'block'; inp.value = ts;
-  document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-bk-ok">SIMPAN</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
-  document.getElementById('btn-bk-ok').onclick = () => { exportData(inp.value); closeModal(); };
-  overlay.classList.add('active');
-  setTimeout(() => { inp.focus(); const v = inp.value; inp.value = ''; inp.value = v; }, 200);
+  const now = new Date(); const ts = `PORTO_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  const overlay = document.getElementById('modal-overlay'); const inp = document.getElementById('modal-input'); document.getElementById('modal-title').innerText = 'SIMPAN BACKUP';
+  inp.style.display = 'block'; inp.value = ts; document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-bk-ok">SIMPAN</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
+  document.getElementById('btn-bk-ok').onclick = () => { exportData(inp.value); closeModal(); }; overlay.classList.add('active'); setTimeout(() => { inp.focus(); const v = inp.value; inp.value = ''; inp.value = v; }, 200);
 }
-
 function renamePopup(oldVal, type) {
-  const overlay = document.getElementById('modal-overlay');
-  const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = 'RENAME ' + oldVal;
-  inp.style.display = 'block'; inp.value = oldVal;
-  document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-ren-ok">SIMPAN</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
-  document.getElementById('btn-ren-ok').onclick = () => { renameProcess(oldVal, inp.value, type); closeModal(); };
-  overlay.classList.add('active');
-  setTimeout(() => { inp.focus(); const v = inp.value; inp.value = ''; inp.value = v; }, 200);
+  const overlay = document.getElementById('modal-overlay'); const inp = document.getElementById('modal-input'); document.getElementById('modal-title').innerText = 'RENAME ' + oldVal;
+  inp.style.display = 'block'; inp.value = oldVal; document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-ren-ok">SIMPAN</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
+  document.getElementById('btn-ren-ok').onclick = () => { renameProcess(oldVal, inp.value, type); closeModal(); }; overlay.classList.add('active'); setTimeout(() => { inp.focus(); const v = inp.value; inp.value = ''; inp.value = v; }, 200);
 }
-
 function openExcelPopup() {
-  const now = new Date();
-  const ts = `PORTO_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
-  const overlay = document.getElementById('modal-overlay');
-  const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = 'EXPORT KE CSV';
-  inp.style.display = 'block'; inp.value = ts;
-  document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-xl-ok">EXPORT</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
-  document.getElementById('btn-xl-ok').onclick = () => { exportToExcel(inp.value); closeModal(); };
-  overlay.classList.add('active');
-  setTimeout(() => { inp.focus(); }, 200);
+  const now = new Date(); const ts = `PORTO_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  const overlay = document.getElementById('modal-overlay'); const inp = document.getElementById('modal-input'); document.getElementById('modal-title').innerText = 'EXPORT KE CSV';
+  inp.style.display = 'block'; inp.value = ts; document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-xl-ok">EXPORT</button><button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
+  document.getElementById('btn-xl-ok').onclick = () => { exportToExcel(inp.value); closeModal(); }; overlay.classList.add('active'); setTimeout(() => { inp.focus(); }, 200);
 }
 
-// ══════════════════════════════
-//  SCROLL — hide backup on scroll down
-// ══════════════════════════════
-let lastScrollY = 0;
-let scrollTicking = false;
+let lastScrollY = 0; let scrollTicking = false;
 window.addEventListener('scroll', () => {
-  if (scrollTicking) return;
-  scrollTicking = true;
+  if (scrollTicking) return; scrollTicking = true;
   requestAnimationFrame(() => {
-    const cur = window.scrollY;
-    const br = document.getElementById('backup-row');
+    const cur = window.scrollY; const br = document.getElementById('backup-row');
     if (br) {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const nearBottom = maxScroll - cur < 60;
-      if (nearBottom) {
-        // jangan toggle apapun di ujung bawah
-      } else if (cur > lastScrollY && cur > 40) {
-        br.classList.add('hidden');
-      } else if (cur < lastScrollY) {
-        br.classList.remove('hidden');
-      }
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight; const nearBottom = maxScroll - cur < 60;
+      if (!nearBottom && cur > lastScrollY && cur > 40) br.classList.add('hidden'); else if (cur < lastScrollY) br.classList.remove('hidden');
     }
-    lastScrollY = cur;
-    scrollTicking = false;
+    lastScrollY = cur; scrollTicking = false;
   });
 }, { passive: true });
 
-// ══════════════════════════════
-//  LOGO FALLBACK
-// ══════════════════════════════
-function handleLogoError(img, sym) {
-  if (sym === 'IDR') { img.parentElement.innerHTML = `<div class="logo-initial" style="color:#22d3a0">RP</div>`; return; }
-  const retry = parseInt(img.getAttribute('data-retry') || '0');
-  const s = sym.toLowerCase();
-  const cgId = coinMapCG[sym] || s;
-  const sources = [
-    // existing (prioritas)
-    `https://gate.io/images/coin_icon/64/${s}.png`,
-    `https://assets.coincap.io/assets/icons/${s}@2x.png`,
-    `https://static.okx.com/cdn/oksupport/asset/currency/icon/${s}.png`,
-    // tambahan fallback
-    `https://assets.coingecko.com/coins/images/1/small/${cgId}.png`,
-    `https://coinicons-api.vercel.app/api/icon/${s}`,
-    `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${s}.png`
-  ];
-  if (retry < sources.length) { img.setAttribute('data-retry', retry + 1); img.src = sources[retry]; }
-  else { img.parentElement.innerHTML = `<div class="logo-initial">${sym.substring(0,2)}</div>`; }
-}
-
-// ══════════════════════════════
-//  DATA & STATE
-// ══════════════════════════════
-let usdToIdr = 16000;
-let prices = {}, changes = {}, coinMapCG = {};
-let currentTab = 'exchange';
-let isFetching = false;
-let watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '[]');
-let balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
-let coinSources = JSON.parse(localStorage.getItem('my_coin_sources') || '{}');
-let allExchanges = JSON.parse(localStorage.getItem('my_exchanges_v2') || '[]');
-let expandedItem = null;
-let currentMode = 'restore';
-let holdTimer, startX, startY;
+let usdToIdr = 16000; let prices = {}, changes = {}, coinMapCG = {}; let currentTab = 'exchange'; let isFetching = false;
+let watchlist = JSON.parse(localStorage.getItem('my_assets_v2') || '[]'); let balances = JSON.parse(localStorage.getItem('my_balances_v2') || '{}');
+let coinSources = JSON.parse(localStorage.getItem('my_coin_sources') || '{}'); let allExchanges = JSON.parse(localStorage.getItem('my_exchanges_v2') || '[]');
+let expandedItem = null; let currentMode = 'restore'; let holdTimer, startX, startY;
 
 const exchangeLogos = {
-  "BINANCE": "https://assets.coingecko.com/markets/images/52/standard/binance.jpg?1706864274",
-  "BYBIT": "https://assets.coingecko.com/markets/images/698/standard/bybit_spot.png?1706864649",
-  "OKX": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080981/unnamed_2_qebw5t.png",
-  "GATE": "https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png",
-  "TOKOCRYPTO": "https://www.gate.io/images/coin_icon/64/tko.png",
-  "INDODAX": "https://assets.coingecko.com/markets/images/3/large/logogram-Indodax-new-_JPG_format.jpg?1706864243",
-  "PINTU": "https://pintu.co.id/favicon.ico",
-  "MEXC": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081648/images_1_ah20ou.png",
-  "KUCOIN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081889/kucoin-icon-filled-256_vhtce0.png",
-  "BITMART": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081888/unnamed_4_c5x38a.png",
-  "BITGET": "https://assets.coingecko.com/markets/images/540/standard/2023-07-25_21.47.43.jpg?1706864507",
-  "COINBASE": "https://assets.coingecko.com/markets/images/23/standard/Coinbase_Coin_Primary.png?1706864258",
-  "UPBIT": "https://assets.coingecko.com/markets/images/117/standard/upbit.png?1706864294",
-  "RETRO": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080693/wallet-glyph-black-icon-vector_v4lude.jpg",
-  "TABUNGAN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080466/images_e9yzms.png",
-  "EXCLAIM": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081431/claimed-rubber-stamp-design-arts-600nw-2436629145_emhjcj.webp",
-  "IMTOKEN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081431/unnamed_3_whdxwy.png",
-  "SUI": "https://assets.coingecko.com/asset_platforms/images/126/standard/sui-ocean-square.png?1727791325",
-  "SOL": "https://assets.coingecko.com/asset_platforms/images/5/standard/solana.png?1706606708",
-  "TON": "https://assets.coingecko.com/asset_platforms/images/142/small/tonblockchain.jpeg?1706606805",
-  "KEPLR": "https://res.cloudinary.com/dor7smqah/image/upload/v1774079462/keplr-icon-radii_doymj6.png",
-  "HASHPACK": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080164/unnamed_1_ofbzwh.png",
-  "ZERION": "https://res.cloudinary.com/dor7smqah/image/upload/v1774079795/zerion1665411612684_zhc63d.png",
-  "XAMAN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080246/6323b6992e21c7404dc6ed64_public_zb6a6y.png",
-  "FARCASTER": "https://play-lh.googleusercontent.com/CjVd0200wTIwL13HmIh2_x_RYMTLaJBO4rbgJ59_oQHyqcDmEmM-yT2FJfris-RneTifJwSCRZMXUPHy8sEX=w240-h480-rw",
-  "WALLET": "https://assets.coincap.io/assets/icons/twt@2x.png"
+  "BINANCE": "https://assets.coingecko.com/markets/images/52/standard/binance.jpg?1706864274", "BYBIT": "https://assets.coingecko.com/markets/images/698/standard/bybit_spot.png?1706864649", "OKX": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080981/unnamed_2_qebw5t.png", "GATE": "https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png", "TOKOCRYPTO": "https://www.gate.io/images/coin_icon/64/tko.png", "INDODAX": "https://assets.coingecko.com/markets/images/3/large/logogram-Indodax-new-_JPG_format.jpg?1706864243", "PINTU": "https://pintu.co.id/favicon.ico", "MEXC": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081648/images_1_ah20ou.png", "KUCOIN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081889/kucoin-icon-filled-256_vhtce0.png", "BITMART": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081888/unnamed_4_c5x38a.png", "BITGET": "https://assets.coingecko.com/markets/images/540/standard/2023-07-25_21.47.43.jpg?1706864507", "COINBASE": "https://assets.coingecko.com/markets/images/23/standard/Coinbase_Coin_Primary.png?1706864258", "UPBIT": "https://assets.coingecko.com/markets/images/117/standard/upbit.png?1706864294", "RETRO": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080693/wallet-glyph-black-icon-vector_v4lude.jpg", "TABUNGAN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080466/images_e9yzms.png", "EXCLAIM": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081431/claimed-rubber-stamp-design-arts-600nw-2436629145_emhjcj.webp", "IMTOKEN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774081431/unnamed_3_whdxwy.png", "SUI": "https://assets.coingecko.com/asset_platforms/images/126/standard/sui-ocean-square.png?1727791325", "SOL": "https://assets.coingecko.com/asset_platforms/images/5/standard/solana.png?1706606708", "TON": "https://assets.coingecko.com/asset_platforms/images/142/small/tonblockchain.jpeg?1706606805", "KEPLR": "https://res.cloudinary.com/dor7smqah/image/upload/v1774079462/keplr-icon-radii_doymj6.png", "HASHPACK": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080164/unnamed_1_ofbzwh.png", "ZERION": "https://res.cloudinary.com/dor7smqah/image/upload/v1774079795/zerion1665411612684_zhc63d.png", "XAMAN": "https://res.cloudinary.com/dor7smqah/image/upload/v1774080246/6323b6992e21c7404dc6ed64_public_zb6a6y.png", "FARCASTER": "https://play-lh.googleusercontent.com/CjVd0200wTIwL13HmIh2_x_RYMTLaJBO4rbgJ59_oQHyqcDmEmM-yT2FJfris-RneTifJwSCRZMXUPHy8sEX=w240-h480-rw", "WALLET": "https://assets.coincap.io/assets/icons/twt@2x.png"
 };
 
 window.onload = () => {
   migrateToUppercase();
-  const savedSort = localStorage.getItem('last_sort') || 'manual';
-  const savedCur = localStorage.getItem('last_cur') || 'IDR';
+  const savedSort = localStorage.getItem('last_sort') || 'manual'; const savedCur = localStorage.getItem('last_cur') || 'IDR';
   ['sort-order','sort-order-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.value = savedSort; });
   ['currency-view','currency-view-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.value = savedCur; });
-  renderList();
-  fetchKurs();
-  fetchCoinMap();
-  fetchAll();
-  setInterval(fetchAll, 60000);
+  renderList(); fetchKurs(); fetchCoinMap(); fetchAll(); setInterval(fetchAll, 60000);
 };
 
 function migrateToUppercase() {
@@ -1881,99 +735,52 @@ function migrateToUppercase() {
   }
   for (let c in balances) {
     let uc = c.toUpperCase(); newBal[uc] = {};
-    for (let s in balances[c]) {
-      let us = s.toUpperCase();
-      newBal[uc][us] = (typeof balances[c][s] === 'object') ? balances[c][s] : { amount: balances[c][s], staking: '' };
-    }
+    for (let s in balances[c]) { let us = s.toUpperCase(); newBal[uc][us] = (typeof balances[c][s] === 'object') ? balances[c][s] : { amount: balances[c][s], staking: '' }; }
   }
-  coinSources = newCS; balances = newBal;
-  if(dirty) saveAll();
+  coinSources = newCS; balances = newBal; if(dirty) saveAll();
 }
 
-// ══════════════════════════════
-//  FETCH
-// ══════════════════════════════
 async function fetchKurs() {
   try {
-    const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTIDR');
-    const d = await r.json();
-    if(d.price) {
-      usdToIdr = parseFloat(d.price);
-      const txt = `USD/IDR: ${Math.round(usdToIdr).toLocaleString('id-ID')}`;
-      ['kurs-live','kurs-live-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = txt; });
-      updatePricesOnly();
-    }
+    const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTIDR'); const d = await r.json();
+    if(d.price) { usdToIdr = parseFloat(d.price); const txt = `USD/IDR: ${Math.round(usdToIdr).toLocaleString('id-ID')}`; ['kurs-live','kurs-live-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = txt; }); updatePricesOnly(); }
   } catch(e) {}
 }
 
 async function fetchCoinMap() {
-  // Cek cache dulu, kalau masih fresh (< 24 jam) pakai cache
   try {
-    const cached = localStorage.getItem('cg_coin_map');
-    const cachedTs = parseInt(localStorage.getItem('cg_coin_map_ts') || '0');
-    if (cached && Date.now() - cachedTs < 24 * 60 * 60 * 1000) {
-      Object.assign(coinMapCG, JSON.parse(cached));
-      return;
-    }
+    const cached = localStorage.getItem('cg_coin_map'); const cachedTs = parseInt(localStorage.getItem('cg_coin_map_ts') || '0');
+    if (cached && Date.now() - cachedTs < 24 * 60 * 60 * 1000) { Object.assign(coinMapCG, JSON.parse(cached)); return; }
   } catch(e) {}
   try {
-    const r = await fetch('https://api.coingecko.com/api/v3/coins/list');
-    const list = await r.json();
+    const r = await fetch('https://api.coingecko.com/api/v3/coins/list'); const list = await r.json();
     list.forEach(c => { coinMapCG[c.symbol.toUpperCase()] = c.id; });
     try {
-      const mapToSave = {};
-      list.forEach(c => { mapToSave[c.symbol.toUpperCase()] = c.id; });
-      localStorage.setItem('cg_coin_map', JSON.stringify(mapToSave));
-      localStorage.setItem('cg_coin_map_ts', Date.now().toString());
+      const mapToSave = {}; list.forEach(c => { mapToSave[c.symbol.toUpperCase()] = c.id; });
+      localStorage.setItem('cg_coin_map', JSON.stringify(mapToSave)); localStorage.setItem('cg_coin_map_ts', Date.now().toString());
     } catch(e) {}
-  } catch(e) {
-    // Gagal fetch, pakai cache lama walau expired
-    try {
-      const cached = localStorage.getItem('cg_coin_map');
-      if (cached) Object.assign(coinMapCG, JSON.parse(cached));
-    } catch(e2) {}
-  }
+  } catch(e) { try { const cached = localStorage.getItem('cg_coin_map'); if (cached) Object.assign(coinMapCG, JSON.parse(cached)); } catch(e2) {} }
 }
 
 async function fetchAll() {
   if(isFetching) return; isFetching = true;
   let rem = watchlist.filter(s => !['IDR','USDT','USDC','USD','BUSD'].includes(s));
   try {
-    const res = await fetch('https://api.bybit.com/v5/market/tickers?category=spot');
-    const data = await res.json();
-    if(data.result?.list) {
-      data.result.list.forEach(item => {
-        let sym = item.symbol.replace('USDT','');
-        if(rem.includes(sym)) { prices[sym] = parseFloat(item.lastPrice); changes[sym] = (parseFloat(item.price24hPcnt)*100).toFixed(2); rem = rem.filter(c => c !== sym); }
-      });
-    }
+    const res = await fetch('https://api.bybit.com/v5/market/tickers?category=spot'); const data = await res.json();
+    if(data.result?.list) { data.result.list.forEach(item => { let sym = item.symbol.replace('USDT',''); if(rem.includes(sym)) { prices[sym] = parseFloat(item.lastPrice); changes[sym] = (parseFloat(item.price24hPcnt)*100).toFixed(2); rem = rem.filter(c => c !== sym); } }); }
   } catch(e) {}
   if(rem.length > 0) {
     try {
-      const res = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-      const data = await res.json();
-      data.forEach(item => {
-        let sym = item.symbol.replace('USDT','');
-        if(rem.includes(sym)) { prices[sym] = parseFloat(item.lastPrice); changes[sym] = parseFloat(item.priceChangePercent).toFixed(2); rem = rem.filter(c => c !== sym); }
-      });
+      const res = await fetch('https://api.binance.com/api/v3/ticker/24hr'); const data = await res.json();
+      data.forEach(item => { let sym = item.symbol.replace('USDT',''); if(rem.includes(sym)) { prices[sym] = parseFloat(item.lastPrice); changes[sym] = parseFloat(item.priceChangePercent).toFixed(2); rem = rem.filter(c => c !== sym); } });
     } catch(e) {}
   }
-  // Fallback batch CoinGecko untuk yang masih belum ketemu
   if (rem.length > 0) {
     const cgIds = rem.filter(s => coinMapCG[s]).map(s => coinMapCG[s]);
     if (cgIds.length > 0) {
       try {
-        const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cgIds.join(',')}&vs_currencies=usd&include_24hr_change=true`);
-        const d = await r.json();
-        rem = rem.filter(s => {
-          const id = coinMapCG[s];
-          if (id && d[id]) {
-            prices[s] = d[id].usd;
-            changes[s] = d[id].usd_24h_change ? d[id].usd_24h_change.toFixed(2) : '0.00';
-            return false; // sudah dapat
-          }
-          return true; // masih belum
-        });
+        const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cgIds.join(',')}&vs_currencies=usd&include_24hr_change=true`); const d = await r.json();
+        rem = rem.filter(s => { const id = coinMapCG[s]; if (id && d[id]) { prices[s] = d[id].usd; changes[s] = d[id].usd_24h_change ? d[id].usd_24h_change.toFixed(2) : '0.00'; return false; } return true; });
       } catch(e) {}
     }
   }
@@ -1982,44 +789,15 @@ async function fetchAll() {
     else if(['USDT','USDC','USD','BUSD'].includes(s)) { prices[s] = 1; changes[s] = '0.00'; }
     else if(!prices[s]) { prices[s] = 0; changes[s] = '0.00'; }
   });
-  updatePricesOnly();
-  isFetching = false;
+  updatePricesOnly(); isFetching = false;
 }
 
-// ══════════════════════════════
-//  HELPERS
-// ══════════════════════════════
-function getSortType() {
-  const isDesktop = window.innerWidth >= 700;
-  return document.getElementById(isDesktop ? 'sort-order-desk' : 'sort-order')?.value || 'manual';
-}
-function getCurrencyView() {
-  const isDesktop = window.innerWidth >= 700;
-  return document.getElementById(isDesktop ? 'currency-view-desk' : 'currency-view')?.value || 'IDR';
-}
-function getFilterQuery() {
-  const isDesktop = window.innerWidth >= 700;
-  return (document.getElementById(isDesktop ? 'filter-desk' : 'filter-input')?.value || '').toUpperCase();
-}
-
-function getCoinTotal(sym) {
-  let t = 0;
-  (coinSources[sym] || []).forEach(src => {
-    const d = balances[sym]?.[src];
-    t += (typeof d === 'object') ? (parseFloat(d.amount||0) + parseFloat(d.staking||0)) : parseFloat(d||0);
-  });
-  return t;
-}
-
-function fmtUSD(v) {
-  if(v >= 1000000) return `$${(v/1000000).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}M`;
-  if(v >= 1000) return `$${v.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})}`;
-  return `$${v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-}
-
-function fmtIDR(v) {
-  return `Rp ${Math.round(v).toLocaleString('id-ID')}`;
-}
+function getSortType() { const isDesktop = window.innerWidth >= 700; return document.getElementById(isDesktop ? 'sort-order-desk' : 'sort-order')?.value || 'manual'; }
+function getCurrencyView() { const isDesktop = window.innerWidth >= 700; return document.getElementById(isDesktop ? 'currency-view-desk' : 'currency-view')?.value || 'IDR'; }
+function getFilterQuery() { const isDesktop = window.innerWidth >= 700; return (document.getElementById(isDesktop ? 'filter-desk' : 'filter-input')?.value || '').toUpperCase(); }
+function getCoinTotal(sym) { let t = 0; (coinSources[sym] || []).forEach(src => { const d = balances[sym]?.[src]; t += (typeof d === 'object') ? (parseFloat(d.amount||0) + parseFloat(d.staking||0)) : parseFloat(d||0); }); return t; }
+function fmtUSD(v) { if(v >= 1000000) return `$${(v/1000000).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}M`; if(v >= 1000) return `$${v.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})}`; return `$${v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`; }
+function fmtIDR(v) { return `Rp ${Math.round(v).toLocaleString('id-ID')}`; }
 
 function saveAll() {
   localStorage.setItem('my_assets_v2', JSON.stringify(watchlist));
@@ -2028,475 +806,234 @@ function saveAll() {
   localStorage.setItem('my_exchanges_v2', JSON.stringify(allExchanges));
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.innerText = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 
-// ══════════════════════════════
-//  UPDATE PRICES (no re-render)
-// ══════════════════════════════
 function updatePricesOnly() {
-  const cur = getCurrencyView();
-  let totalUsd = 0;
-
+  const cur = getCurrencyView(); let totalUsd = 0;
   if(currentTab === 'exchange') {
     allExchanges.forEach(ex => {
       let exUsd = 0;
       watchlist.forEach(sym => {
         if(coinSources[sym]?.includes(ex)) {
-          const d = balances[sym]?.[ex];
-          let b = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0);
+          const d = balances[sym]?.[ex]; let b = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0);
           exUsd += b * (prices[sym]||0);
         }
       });
       totalUsd += exUsd;
-      const el = document.getElementById(`val-ex-${ex}`);
-      if(el) el.innerText = cur === 'IDR' ? fmtIDR(exUsd*usdToIdr) : fmtUSD(exUsd);
-
-      // update per-coin estimates inside expand
+      const el = document.getElementById(`val-ex-${ex}`); if(el) el.innerText = cur === 'IDR' ? fmtIDR(exUsd*usdToIdr) : fmtUSD(exUsd);
       watchlist.forEach(sym => {
         if(coinSources[sym]?.includes(ex)) {
           const est = document.getElementById(`est-${ex}-${sym}`);
-          if(est) {
-            const d = balances[sym]?.[ex];
-            const amt = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0);
-            const usdVal = amt * (prices[sym]||0);
-            est.innerText = amt > 0 ? `~${fmtUSD(usdVal)}` : '';
-          }
+          if(est) { const d = balances[sym]?.[ex]; const amt = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0); const usdVal = amt * (prices[sym]||0); est.innerText = amt > 0 ? `~${fmtUSD(usdVal)}` : ''; }
         }
       });
     });
   } else {
     watchlist.forEach(sym => {
-      const valUsd = getCoinTotal(sym) * (prices[sym]||0);
-      totalUsd += valUsd;
-      const elVal = document.getElementById(`val-coin-${sym}`);
-      const elPrice = document.getElementById(`price-coin-${sym}`);
-      const elChange = document.getElementById(`change-coin-${sym}`);
+      const valUsd = getCoinTotal(sym) * (prices[sym]||0); totalUsd += valUsd;
+      const elVal = document.getElementById(`val-coin-${sym}`); const elPrice = document.getElementById(`price-coin-${sym}`); const elChange = document.getElementById(`change-coin-${sym}`);
       if(elVal) elVal.innerText = cur === 'IDR' ? fmtIDR(valUsd*usdToIdr) : fmtUSD(valUsd);
       if(elPrice) elPrice.innerText = sym === 'IDR' ? 'Stable IDR' : '$'+(prices[sym]||0).toLocaleString(undefined,{minimumFractionDigits:(prices[sym]||0)<1?4:2});
-      if(elChange) {
-        const c = changes[sym] || '0.00';
-        elChange.innerText = `${parseFloat(c)>=0?'+':''}${c}%`;
-        elChange.className = `change-badge ${parseFloat(c)>=0?'up':'down'}`;
-      }
-      // per-source estimates in coin tab
+      if(elChange) { const c = changes[sym] || '0.00'; elChange.innerText = `${parseFloat(c)>=0?'+':''}${c}%`; elChange.className = `change-badge ${parseFloat(c)>=0?'up':'down'}`; }
       (coinSources[sym]||[]).forEach(src => {
         const est = document.getElementById(`est-coin-${sym}-${src}`);
-        if(est) {
-          const d = balances[sym]?.[src];
-          const amt = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0);
-          const usdVal = amt * (prices[sym]||0);
-          est.innerText = amt > 0 ? `~${fmtUSD(usdVal)}` : '';
-        }
+        if(est) { const d = balances[sym]?.[src]; const amt = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0); const usdVal = amt * (prices[sym]||0); est.innerText = amt > 0 ? `~${fmtUSD(usdVal)}` : ''; }
       });
     });
   }
-
-  const idrTotal = fmtIDR(totalUsd * usdToIdr);
-  const usdTotal = fmtUSD(totalUsd);
+  const idrTotal = fmtIDR(totalUsd * usdToIdr); const usdTotal = fmtUSD(totalUsd);
   ['total-all-idr','total-idr-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = idrTotal; });
   ['total-all-usd','total-usd-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = usdTotal; });
-
-  // asset count badge
-  const cnt = currentTab === 'exchange' ? allExchanges.length : watchlist.length;
-  const label = currentTab === 'exchange' ? 'exchange' : 'aset';
-  ['asset-count-badge', 'asset-count-badge-desk'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.innerText = `${cnt} ${label}`;
-  });
-
-  // stat boxes desktop — 3 top gainers dengan icon + harga + persentase
+  const cnt = currentTab === 'exchange' ? allExchanges.length : watchlist.length; const label = currentTab === 'exchange' ? 'exchange' : 'aset';
+  ['asset-count-badge', 'asset-count-badge-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = `${cnt} ${label}`; });
   const gainersEl = document.getElementById('sidebar-top-gainers');
   if (gainersEl) {
-    const ranked = watchlist
-      .filter(s => changes[s] !== undefined)
-      .map(s => ({ sym: s, chg: parseFloat(changes[s] || 0), price: prices[s] || 0 }))
-      .sort((a, b) => b.chg - a.chg)
-      .slice(0, 3);
-
+    const ranked = watchlist.filter(s => changes[s] !== undefined).map(s => ({ sym: s, chg: parseFloat(changes[s] || 0), price: prices[s] || 0 })).sort((a, b) => b.chg - a.chg).slice(0, 3);
     const fmtPrice = (p) => p >= 1000 ? `$${Math.round(p).toLocaleString()}` : p >= 1 ? `$${p.toFixed(2)}` : `$${p.toFixed(4)}`;
-
+    // Pakai logo lapis
     gainersEl.innerHTML = ranked.length ? ranked.map(g => {
-      return `<div class="stat-box">
-        <div class="stat-top-row">
-          <div class="stat-icon"><img src="any" onerror="handleLogoError(this,'${g.sym}')"></div>
-          <span class="stat-sym">${g.sym}</span>
-        </div>
-        <div class="stat-price">${fmtPrice(g.price)}</div>
-        <div class="stat-chg ${g.chg >= 0 ? 'green' : 'red'}">${g.chg >= 0 ? '+' : ''}${g.chg.toFixed(2)}%</div>
-      </div>`;
-    }).join('') :
-    `<div class="stat-box"><div class="stat-sym">-</div><div class="stat-price">-</div><div class="stat-chg">-</div></div>
-     <div class="stat-box"><div class="stat-sym">-</div><div class="stat-price">-</div><div class="stat-chg">-</div></div>
-     <div class="stat-box"><div class="stat-sym">-</div><div class="stat-price">-</div><div class="stat-chg">-</div></div>`;
+      const gLogoHtml = g.sym === 'IDR' ? `<div class="logo-initial" style="color:#22d3a0">RP</div>` : `<div class="logo-initial">${g.sym.substring(0,2)}</div><img class="logo-img" src="${getLogoSrcs(g.sym)[0]}" onload="this.style.opacity='1'" onerror="handleLogoError(this,'${g.sym}')">`;
+      return `<div class="stat-box"><div class="stat-top-row"><div class="stat-icon" style="position:relative">${gLogoHtml}</div><span class="stat-sym">${g.sym}</span></div><div class="stat-price">${fmtPrice(g.price)}</div><div class="stat-chg ${g.chg >= 0 ? 'green' : 'red'}">${g.chg >= 0 ? '+' : ''}${g.chg.toFixed(2)}%</div></div>`;
+    }).join('') : `<div class="stat-box"><div class="stat-sym">-</div><div class="stat-price">-</div><div class="stat-chg">-</div></div><div class="stat-box"><div class="stat-sym">-</div><div class="stat-price">-</div><div class="stat-chg">-</div></div><div class="stat-box"><div class="stat-sym">-</div><div class="stat-price">-</div><div class="stat-chg">-</div></div>`;
   }
 }
 
-// ══════════════════════════════
-//  EXPAND / COLLAPSE (smooth)
-// ══════════════════════════════
 function toggleDetail(id) {
-  const target = document.getElementById(`det-${id}`);
-  if(!target) return;
-
-  // close previous
-  if(expandedItem && expandedItem !== id) {
-    const old = document.getElementById(`det-${expandedItem}`);
-    if(old) { old.classList.remove('open'); document.getElementById(`wrap-${expandedItem}`)?.classList.remove('expanded'); }
-  }
-
+  const target = document.getElementById(`det-${id}`); if(!target) return;
+  if(expandedItem && expandedItem !== id) { const old = document.getElementById(`det-${expandedItem}`); if(old) { old.classList.remove('open'); document.getElementById(`wrap-${expandedItem}`)?.classList.remove('expanded'); } }
   const wrap = document.getElementById(`wrap-${id}`);
-  if(target.classList.contains('open')) {
-    target.classList.remove('open');
-    wrap?.classList.remove('expanded');
-    expandedItem = null;
-  } else {
-    target.classList.add('open');
-    wrap?.classList.add('expanded');
-    expandedItem = id;
-    // update estimates right away
-    setTimeout(updatePricesOnly, 50);
-  }
+  if(target.classList.contains('open')) { target.classList.remove('open'); wrap?.classList.remove('expanded'); expandedItem = null; }
+  else { target.classList.add('open'); wrap?.classList.add('expanded'); expandedItem = id; setTimeout(updatePricesOnly, 50); }
 }
 
-// ══════════════════════════════
-//  RENDER LIST
-// ══════════════════════════════
 function renderList() {
-  const list = document.getElementById('main-list');
-  const query = getFilterQuery();
-  const sortType = getSortType();
-  let html = '';
-
+  const list = document.getElementById('main-list'); const query = getFilterQuery(); const sortType = getSortType(); let html = '';
   if(currentTab === 'exchange') {
     let exArr = allExchanges.map(ex => {
       let t = 0;
-      watchlist.forEach(s => {
-        if(coinSources[s]?.includes(ex)) {
-          const d = balances[s]?.[ex];
-          let b = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0);
-          t += b * (prices[s]||0);
-        }
-      });
+      watchlist.forEach(s => { if(coinSources[s]?.includes(ex)) { const d = balances[s]?.[ex]; let b = (typeof d === 'object') ? (parseFloat(d.amount||0)+parseFloat(d.staking||0)) : parseFloat(d||0); t += b * (prices[s]||0); } });
       return { name: ex, totalValue: t };
     }).filter(ex => ex.name.includes(query));
-
     if(sortType === 'name') exArr.sort((a,b) => a.name.localeCompare(b.name));
     else if(sortType === 'value' || sortType === 'gainers') exArr.sort((a,b) => b.totalValue - a.totalValue);
-
-    if(exArr.length === 0) {
-      html = `<div class="empty-state"><div class="empty-icon">📭</div><p>Belum ada exchange.<br>Tambah di bawah.</p></div>`;
-    }
-
-    exArr.forEach(ex => {
-      const brand = ex.name.split(' ')[0];
-      const suffix = ex.name.split(' ').slice(1).join(' ');
+    
+    if(exArr.length === 0) html = `<div class="empty-state"><div class="empty-icon">📭</div><p>Belum ada exchange.<br>Tambah di bawah.</p></div>`;
+    
+    exArr.forEach((ex, idx) => {
+      const brand = ex.name.split(' ')[0]; const suffix = ex.name.split(' ').slice(1).join(' '); 
       const logo = exchangeLogos[brand] || '';
-      let subKoin = watchlist.filter(s => coinSources[s]?.includes(ex.name));
+      // Layer trik utk logo exchange
+      const exInitial = brand.substring(0,2);
+      const exLogoHtml = `<div class="logo-initial">${exInitial}</div>${logo ? `<img class="logo-img" src="${logo}" onload="this.style.opacity='1'" onerror="this.remove()">` : ''}`;
 
+      let subKoin = watchlist.filter(s => coinSources[s]?.includes(ex.name));
       if(sortType === 'name') subKoin.sort((a,b) => a.localeCompare(b));
       else if(sortType === 'value') subKoin.sort((a,b) => (getCoinTotal(b)*(prices[b]||0)) - (getCoinTotal(a)*(prices[a]||0)));
       else if(sortType === 'gainers') subKoin.sort((a,b) => parseFloat(changes[b]||-999) - parseFloat(changes[a]||-999));
-
       const isOpen = expandedItem === ex.name;
-
+      
       const coinRows = subKoin.map(s => {
         const d = (balances[s] && balances[s][ex.name]) ? balances[s][ex.name] : { amount: '', staking: '' };
-        const amt = (typeof d === 'object') ? parseFloat(d.amount||0) : parseFloat(d||0);
-        const stk = (typeof d === 'object') ? parseFloat(d.staking||0) : 0;
-        const usdEst = (amt + stk) * (prices[s]||0);
-        const estStr = (amt + stk) > 0 ? `~${fmtUSD(usdEst)}` : '';
-        const chg = parseFloat(changes[s] || 0);
-        const chgStr = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`;
-        const chgColor = chg >= 0 ? 'var(--green)' : 'var(--red)';
+        const amt = (typeof d === 'object') ? parseFloat(d.amount||0) : parseFloat(d||0); const stk = (typeof d === 'object') ? parseFloat(d.staking||0) : 0;
+        const usdEst = (amt + stk) * (prices[s]||0); const estStr = (amt + stk) > 0 ? `~${fmtUSD(usdEst)}` : '';
+        const chg = parseFloat(changes[s] || 0); const chgStr = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`; const chgColor = chg >= 0 ? 'var(--green)' : 'var(--red)';
+        
+        // Layer trik utk source icon
+        const firstUrl = getLogoSrcs(s)[0];
+        const initialTxt = s.substring(0,2);
+        const logoHtml = s === 'IDR' ? `<div class="logo-initial" style="color:#22d3a0">RP</div>` : `<div class="logo-initial">${initialTxt}</div><img class="logo-img" src="${firstUrl}" data-retry="1" onload="this.style.opacity='1'" onerror="handleLogoError(this,'${s}')">`;
+        
         return `
           <div class="source-row">
-            <div class="src-label">
-              <div class="src-label-logo"><img src="any" onerror="handleLogoError(this,'${s}')"></div>
-              <span class="src-label-txt">${s}</span>
-              <span style="font-family:var(--mono);font-size:9px;color:${chgColor};white-space:nowrap">${chgStr}</span>
-            </div>
-            <div class="src-inputs">
-              <input type="number" class="src-input" inputmode="decimal"
-                value="${d.amount||''}"
-                oninput="updateBal('${s}','${ex.name}','amount',this.value)"
-                placeholder="Amount">
-              <input type="number" class="src-input" inputmode="decimal"
-                value="${d.staking||''}"
-                oninput="updateBal('${s}','${ex.name}','staking',this.value)"
-                placeholder="Stake">
-            </div>
-            <span class="src-estimate" id="est-${ex.name}-${s}">${estStr}</span>
-            <span class="src-del" onclick="confirmModal('Hapus ${s}?','delete',()=>removeCoinFromExchange('${s}','${ex.name}'))">×</span>
+            <div class="src-label"><div class="src-label-logo">${logoHtml}</div><span class="src-label-txt">${s}</span><span style="font-family:var(--mono);font-size:9px;color:${chgColor};white-space:nowrap">${chgStr}</span></div>
+            <div class="src-inputs"><input type="number" class="src-input" inputmode="decimal" value="${d.amount||''}" oninput="updateBal('${s}','${ex.name}','amount',this.value)" placeholder="Amount"><input type="number" class="src-input" inputmode="decimal" value="${d.staking||''}" oninput="updateBal('${s}','${ex.name}','staking',this.value)" placeholder="Stake"></div>
+            <span class="src-estimate" id="est-${ex.name}-${s}">${estStr}</span><span class="src-del" onclick="confirmModal('Hapus ${s}?','delete',()=>removeCoinFromExchange('${s}','${ex.name}'))">×</span>
           </div>`;
       }).join('');
-
+      
       html += `
-        <div class="item-wrap${isOpen?' expanded':''}" id="wrap-${ex.name}">
-          <div class="item-card"
-            onclick="toggleDetail('${ex.name}')"
-            onmousedown="startHold(event,'${ex.name}','exchange')"
-            onmousemove="moveHold(event)" onmouseup="clearHold()"
-            ontouchstart="startHold(event,'${ex.name}','exchange')"
-            ontouchmove="moveHold(event)" ontouchend="clearHold()">
-            <div class="logo-wrap">
-              ${logo ? `<img src="${logo}" onerror="this.parentElement.innerHTML='<div class=\\'logo-initial\\'>${brand.substring(0,2)}</div>'">` : `<div class="logo-initial">${brand.substring(0,2)}</div>`}
-            </div>
-            <div class="item-info">
-              <div class="item-name">${brand}${suffix ? `<span style="font-size:11px;font-weight:400;color:var(--muted)"> ${suffix}</span>` : ''}</div>
-              <div class="item-sub">${subKoin.length} koin</div>
-            </div>
-            <div class="item-val">
-              <div class="item-val-main" id="val-ex-${ex.name}">-</div>
-            </div>
+        <div class="item-wrap rise-in${isOpen?' expanded':''}" id="wrap-${ex.name}" style="animation-delay: ${idx * 30}ms">
+          <div class="item-card" onclick="toggleDetail('${ex.name}')" onmousedown="startHold(event,'${ex.name}','exchange')" onmousemove="moveHold(event)" onmouseup="clearHold()" ontouchstart="startHold(event,'${ex.name}','exchange')" ontouchmove="moveHold(event)" ontouchend="clearHold()">
+            <div class="logo-wrap">${exLogoHtml}</div>
+            <div class="item-info"><div class="item-name">${brand}${suffix ? `<span style="font-size:11px;font-weight:400;color:var(--muted)"> ${suffix}</span>` : ''}</div><div class="item-sub">${subKoin.length} koin</div></div>
+            <div class="item-val"><div class="item-val-main" id="val-ex-${ex.name}">-</div></div>
           </div>
           <div class="item-detail${isOpen?' open':''}" id="det-${ex.name}">
-            <div class="detail-inner">
-              ${coinRows}
-              <div class="new-src-box">
-                <button class="new-src-btn" style="flex:1;padding:9px 14px;font-size:13px;font-family:var(--sans);font-weight:600" onclick="openCoinSearch('exchange','${ex.name}')">+ Tambah Koin ke ${brand}</button>
-              </div>
-            </div>
+            <div class="detail-inner">${coinRows}<div class="new-src-box"><button class="new-src-btn" style="flex:1;padding:9px 14px;font-size:13px;font-family:var(--sans);font-weight:600" onclick="openCoinSearch('exchange','${ex.name}')">+ Tambah Koin ke ${brand}</button></div></div>
           </div>
         </div>`;
     });
-
   } else {
     let filtered = watchlist.filter(s => s.includes(query));
     if(sortType === 'name') filtered.sort((a,b) => a.localeCompare(b));
     else if(sortType === 'value') filtered.sort((a,b) => (getCoinTotal(b)*(prices[b]||0)) - (getCoinTotal(a)*(prices[a]||0)));
     else if(sortType === 'gainers') filtered.sort((a,b) => parseFloat(changes[b]||-999) - parseFloat(changes[a]||-999));
-
-    if(filtered.length === 0) {
-      html = `<div class="empty-state"><div class="empty-icon">🪙</div><p>Belum ada koin.<br>Tambah di bawah.</p></div>`;
-    }
-
-    filtered.forEach(s => {
-      const subSrc = [...(coinSources[s]||[])];
-      const isOpen = expandedItem === s;
-      const p = prices[s] || 0;
-      const c = changes[s] || '0.00';
-
+    
+    if(filtered.length === 0) html = `<div class="empty-state"><div class="empty-icon">🪙</div><p>Belum ada koin.<br>Tambah di bawah.</p></div>`;
+    
+    filtered.forEach((s, idx) => {
+      const subSrc = [...(coinSources[s]||[])]; const isOpen = expandedItem === s; const p = prices[s] || 0; const c = changes[s] || '0.00';
       const srcRows = subSrc.map(src => {
         const d = (balances[s] && balances[s][src]) ? balances[s][src] : { amount: '', staking: '' };
-        const amt = (typeof d === 'object') ? parseFloat(d.amount||0) : parseFloat(d||0);
-        const stk = (typeof d === 'object') ? parseFloat(d.staking||0) : 0;
-        const usdEst = (amt + stk) * p;
-        const estStr = (amt + stk) > 0 ? `~${fmtUSD(usdEst)}` : '';
-        const srcPrefix = src.split(' ')[0];
-        const srcLogo = exchangeLogos[srcPrefix] || exchangeLogos[src] || '';
+        const amt = (typeof d === 'object') ? parseFloat(d.amount||0) : parseFloat(d||0); const stk = (typeof d === 'object') ? parseFloat(d.staking||0) : 0;
+        const usdEst = (amt + stk) * p; const estStr = (amt + stk) > 0 ? `~${fmtUSD(usdEst)}` : '';
+        
+        // Layer trik utk source icon di tab koin
+        const srcPrefix = src.split(' ')[0]; const srcLogo = exchangeLogos[srcPrefix] || exchangeLogos[src] || '';
+        const exInitial = srcPrefix.substring(0,2);
+        const exLogoHtml = `<div class="logo-initial" style="font-size:8px">${exInitial}</div>${srcLogo ? `<img class="logo-img" src="${srcLogo}" onload="this.style.opacity='1'" onerror="this.remove()">` : ''}`;
+
         return `
           <div class="source-row">
-            <div class="src-label">
-              <div class="src-label-logo">
-                ${srcLogo ? `<img src="${srcLogo}" onerror="this.parentElement.innerHTML='<div class=\\'logo-initial\\'>${srcPrefix.substring(0,2)}</div>'">` : `<div class="logo-initial" style="font-size:8px">${srcPrefix.substring(0,2)}</div>`}
-              </div>
-              <span class="src-label-txt">${src}</span>
-            </div>
-            <div class="src-inputs">
-              <input type="number" class="src-input" inputmode="decimal"
-                value="${d.amount||''}"
-                oninput="updateBal('${s}','${src}','amount',this.value)"
-                placeholder="Amount">
-              <input type="number" class="src-input" inputmode="decimal"
-                value="${d.staking||''}"
-                oninput="updateBal('${s}','${src}','staking',this.value)"
-                placeholder="Stake">
-            </div>
-            <span class="src-estimate" id="est-coin-${s}-${src}">${estStr}</span>
-            <span class="src-del" onclick="confirmModal('Hapus ${src}?','delete',()=>removeSource('${s}','${src}'))">×</span>
+            <div class="src-label"><div class="src-label-logo">${exLogoHtml}</div><span class="src-label-txt">${src}</span></div>
+            <div class="src-inputs"><input type="number" class="src-input" inputmode="decimal" value="${d.amount||''}" oninput="updateBal('${s}','${src}','amount',this.value)" placeholder="Amount"><input type="number" class="src-input" inputmode="decimal" value="${d.staking||''}" oninput="updateBal('${s}','${src}','staking',this.value)" placeholder="Stake"></div>
+            <span class="src-estimate" id="est-coin-${s}-${src}">${estStr}</span><span class="src-del" onclick="confirmModal('Hapus ${src}?','delete',()=>removeSource('${s}','${src}'))">×</span>
           </div>`;
       }).join('');
-
+      
+      // Layer trik utk logo utama di tab koin
+      const firstUrl = getLogoSrcs(s)[0];
+      const initialTxt = s.substring(0,2);
+      const mainLogoHtml = s === 'IDR' ? `<div class="logo-initial" style="color:#22d3a0">RP</div>` : `<div class="logo-initial">${initialTxt}</div><img class="logo-img" src="${firstUrl}" data-retry="1" onload="this.style.opacity='1'" onerror="handleLogoError(this,'${s}')">`;
+      
       html += `
-        <div class="item-wrap${isOpen?' expanded':''}" id="wrap-${s}">
-          <div class="item-card"
-            onclick="toggleDetail('${s}')"
-            onmousedown="startHold(event,'${s}','coin')"
-            onmousemove="moveHold(event)" onmouseup="clearHold()"
-            ontouchstart="startHold(event,'${s}','coin')"
-            ontouchmove="moveHold(event)" ontouchend="clearHold()">
-            <div class="logo-wrap">
-              <img src="any" onerror="handleLogoError(this,'${s}')">
-            </div>
-            <div class="item-info">
-              <div class="item-name">${s}<span id="change-coin-${s}" class="change-badge ${parseFloat(c)>=0?'up':'down'}">${parseFloat(c)>=0?'+':''}${c}%</span></div>
-              <div class="item-sub" id="price-coin-${s}">${p ? '$'+p.toLocaleString(undefined,{minimumFractionDigits:p<1?4:2}) : '...'}</div>
-            </div>
-            <div class="item-val">
-              <div class="item-val-main" style="font-size:12px">${getCoinTotal(s).toLocaleString()}</div>
-              <div class="item-val-sub" id="val-coin-${s}">-</div>
-            </div>
+        <div class="item-wrap rise-in${isOpen?' expanded':''}" id="wrap-${s}" style="animation-delay: ${idx * 30}ms">
+          <div class="item-card" onclick="toggleDetail('${s}')" onmousedown="startHold(event,'${s}','coin')" onmousemove="moveHold(event)" onmouseup="clearHold()" ontouchstart="startHold(event,'${s}','coin')" ontouchmove="moveHold(event)" ontouchend="clearHold()">
+            <div class="logo-wrap">${mainLogoHtml}</div>
+            <div class="item-info"><div class="item-name">${s}<span id="change-coin-${s}" class="change-badge ${parseFloat(c)>=0?'up':'down'}">${parseFloat(c)>=0?'+':''}${c}%</span></div><div class="item-sub" id="price-coin-${s}">${p ? '$'+p.toLocaleString(undefined,{minimumFractionDigits:p<1?4:2}) : '...'}</div></div>
+            <div class="item-val"><div class="item-val-main" style="font-size:12px">${getCoinTotal(s).toLocaleString()}</div><div class="item-val-sub" id="val-coin-${s}">-</div></div>
           </div>
           <div class="item-detail${isOpen?' open':''}" id="det-${s}">
-            <div class="detail-inner">
-              ${srcRows}
-              <div class="new-src-box">
-                <button class="new-src-btn" style="flex:1;padding:9px 14px;font-size:13px;font-family:var(--sans);font-weight:600" onclick="openExSearch('${s}')">+ Tambah ke Exchange</button>
-              </div>
-            </div>
+            <div class="detail-inner">${srcRows}<div class="new-src-box"><button class="new-src-btn" style="flex:1;padding:9px 14px;font-size:13px;font-family:var(--sans);font-weight:600" onclick="openExSearch('${s}')">+ Tambah ke Exchange</button></div></div>
           </div>
         </div>`;
     });
   }
-
-  list.innerHTML = html;
-  updatePricesOnly();
-
-  // Disable scroll-wheel on all number inputs
-  list.querySelectorAll('input[type=number]').forEach(inp => {
-    inp.addEventListener('wheel', e => e.preventDefault(), { passive: false });
-  });
+  list.innerHTML = html; updatePricesOnly();
+  list.querySelectorAll('input[type=number]').forEach(inp => { inp.addEventListener('wheel', e => e.preventDefault(), { passive: false }); });
 }
 
-// ══════════════════════════════
-//  ACTIONS
-// ══════════════════════════════
 function switchTab(tab) {
   currentTab = tab;
   ['tab-ex','tab-ex-d'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', tab==='exchange'); });
   ['tab-coin','tab-coin-d'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', tab==='coin'); });
-  expandedItem = null;
-  const label = tab === 'exchange' ? '+ Tambah Exchange' : '+ Tambah Coin';
-  ['global-add-btn-desk','global-add-btn-mob'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = label; });
-  renderList();
+  expandedItem = null; const label = tab === 'exchange' ? '+ Tambah Exchange' : '+ Tambah Coin';
+  ['global-add-btn-desk','global-add-btn-mob'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = label; }); renderList();
 }
-
 function updateSettings(src) {
   if(src === 'mob') {
-    const sortVal = document.getElementById('sort-order')?.value;
-    const curVal = document.getElementById('currency-view')?.value;
+    const sortVal = document.getElementById('sort-order')?.value; const curVal = document.getElementById('currency-view')?.value;
     if(sortVal) { localStorage.setItem('last_sort', sortVal); const d = document.getElementById('sort-order-desk'); if(d) d.value = sortVal; }
     if(curVal) { localStorage.setItem('last_cur', curVal); const d = document.getElementById('currency-view-desk'); if(d) d.value = curVal; }
   } else {
-    const sortVal = document.getElementById('sort-order-desk')?.value;
-    const curVal = document.getElementById('currency-view-desk')?.value;
+    const sortVal = document.getElementById('sort-order-desk')?.value; const curVal = document.getElementById('currency-view-desk')?.value;
     if(sortVal) { localStorage.setItem('last_sort', sortVal); const d = document.getElementById('sort-order'); if(d) d.value = sortVal; }
     if(curVal) { localStorage.setItem('last_cur', curVal); const d = document.getElementById('currency-view'); if(d) d.value = curVal; }
   }
   renderList();
 }
-
 function handleGlobalAdd() {
-  if (currentTab === 'coin') {
-    openCoinSearch('global');
-    return;
-  }
-  const overlay = document.getElementById('modal-overlay');
-  const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = '+ TAMBAH EXCHANGE';
-  inp.style.display = 'block';
-  inp.type = 'text';
-  inp.value = '';
-  inp.placeholder = 'Nama Exchange...';
-  inp.style.textTransform = 'uppercase';
-  document.getElementById('modal-btns').innerHTML = `
-    <button class="modal-btn mb-ok" id="btn-addex-ok">TAMBAH</button>
-    <button class="modal-btn mb-cancel" onclick="closeModal();document.getElementById('modal-input').style.textTransform=''">BATAL</button>`;
-  document.getElementById('btn-addex-ok').onclick = () => {
-    const v = inp.value.trim().toUpperCase();
-    inp.style.textTransform = '';
-    if (!v) return;
-    closeModal();
-    if (!allExchanges.includes(v)) { allExchanges.push(v); saveAll(); renderList(); }
-    else showToast(`Exchange ${v} sudah ada!`);
-  };
-  inp.onkeypress = e => { if (e.key === 'Enter') document.getElementById('btn-addex-ok')?.click(); };
-  overlay.classList.add('active');
-  setTimeout(() => inp.focus(), 200);
+  if (currentTab === 'coin') { openCoinSearch('global'); return; }
+  const overlay = document.getElementById('modal-overlay'); const inp = document.getElementById('modal-input');
+  document.getElementById('modal-title').innerText = '+ TAMBAH EXCHANGE'; inp.style.display = 'block'; inp.type = 'text'; inp.value = ''; inp.placeholder = 'Nama Exchange...'; inp.style.textTransform = 'uppercase';
+  document.getElementById('modal-btns').innerHTML = `<button class="modal-btn mb-ok" id="btn-addex-ok">TAMBAH</button><button class="modal-btn mb-cancel" onclick="closeModal();document.getElementById('modal-input').style.textTransform=''">BATAL</button>`;
+  document.getElementById('btn-addex-ok').onclick = () => { const v = inp.value.trim().toUpperCase(); inp.style.textTransform = ''; if (!v) return; closeModal(); if (!allExchanges.includes(v)) { allExchanges.push(v); saveAll(); renderList(); } else showToast(`Exchange ${v} sudah ada!`); };
+  inp.onkeypress = e => { if (e.key === 'Enter') document.getElementById('btn-addex-ok')?.click(); }; overlay.classList.add('active'); setTimeout(() => inp.focus(), 200);
 }
-
-function updateBal(s, src, type, v) {
-  if(!balances[s]) balances[s] = {};
-  if(!balances[s][src] || typeof balances[s][src] !== 'object') balances[s][src] = { amount: 0, staking: '' };
-  balances[s][src][type] = v;
-  saveAll();
-  updatePricesOnly();
-}
-
-function addCoinToExchange(ex) {
-  const input = document.getElementById(`add-coin-to-${ex}`);
-  const s = input.value.toUpperCase().trim();
-  if(s) {
-    if(!watchlist.includes(s)) { watchlist.push(s); coinSources[s] = []; }
-    if(!coinSources[s].includes(ex)) { coinSources[s].push(ex); saveAll(); input.value = ''; renderList(); fetchAll(); }
-    else showToast('Koin sudah ada!');
-  }
-}
-
-function addCustomSource(s) {
-  const input = document.getElementById(`new-src-input-${s}`);
-  const v = input.value.trim().toUpperCase();
-  if(v) {
-    if(!coinSources[s].includes(v)) {
-      coinSources[s].push(v);
-      if(!allExchanges.includes(v)) allExchanges.push(v);
-      saveAll(); renderList();
-    } else showToast('Source sudah ada!');
-  }
-}
-
+function updateBal(s, src, type, v) { if(!balances[s]) balances[s] = {}; if(!balances[s][src] || typeof balances[s][src] !== 'object') balances[s][src] = { amount: 0, staking: '' }; balances[s][src][type] = v; saveAll(); updatePricesOnly(); }
 function removeCoinFromExchange(s, ex) { coinSources[s] = coinSources[s].filter(i => i !== ex); saveAll(); renderList(); }
 function removeSource(s, src) { coinSources[s] = coinSources[s].filter(i => i !== src); saveAll(); renderList(); }
-
-function resetApp() {
-  localStorage.clear(); watchlist = []; balances = {}; coinSources = {}; allExchanges = []; prices = {}; changes = {};
-  expandedItem = null; renderList(); updatePricesOnly(); showToast('Data direset!');
-}
-
+function resetApp() { localStorage.clear(); watchlist = []; balances = {}; coinSources = {}; allExchanges = []; prices = {}; changes = {}; expandedItem = null; renderList(); updatePricesOnly(); showToast('Data direset!'); }
 function openFilePicker(mode) { currentMode = mode; document.getElementById('importFile').value = ''; document.getElementById('importFile').click(); }
-
-function exportData(fileName) {
-  const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges };
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
-  a.download = `${fileName.toUpperCase().trim()}.json`;
-  a.click();
-}
-
+function exportData(fileName) { const data = { assets: watchlist, balances: balances, sources: coinSources, exchanges: allExchanges }; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' })); a.download = `${fileName.toUpperCase().trim()}.json`; a.click(); }
 function handleFileSelect(event) {
-  const file = event.target.files[0]; if(!file) return;
-  const reader = new FileReader();
+  const file = event.target.files[0]; if(!file) return; const reader = new FileReader();
   reader.onload = (f) => {
     try {
       let d = JSON.parse(f.target.result);
-      if(currentMode === 'restore') {
-        watchlist = d.assets || []; balances = d.balances || {}; coinSources = d.sources || {}; allExchanges = d.exchanges || [];
-      } else {
-        (d.assets || []).forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); });
-        (d.exchanges || []).forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
+      if(currentMode === 'restore') { watchlist = d.assets || []; balances = d.balances || {}; coinSources = d.sources || {}; allExchanges = d.exchanges || []; }
+      else {
+        (d.assets || []).forEach(s => { if(!watchlist.includes(s)) watchlist.push(s); }); (d.exchanges || []).forEach(ex => { if(!allExchanges.includes(ex)) allExchanges.push(ex); });
         for(let s in d.sources) { if(!coinSources[s]) coinSources[s]=[]; d.sources[s].forEach(src => { if(!coinSources[s].includes(src)) coinSources[s].push(src); }); }
         for(let s in d.balances) { if(!balances[s]) balances[s]={}; for(let src in d.balances[s]) { balances[s][src] = d.balances[s][src]; } }
       }
-      migrateToUppercase(); saveAll(); fetchKurs(); renderList(); updatePricesOnly(); fetchAll();
-      showToast('Berhasil!');
+      migrateToUppercase(); saveAll(); fetchKurs(); renderList(); updatePricesOnly(); fetchAll(); showToast('Berhasil!');
     } catch(err) { showToast('Gagal import!'); }
   };
   reader.readAsText(file);
 }
-
 function exportToExcel(fileName) {
   let csv = 'sep=,\nExchange,Koin,Amount,Staking,Harga USD,Total USD\n';
   allExchanges.forEach(ex => {
     watchlist.forEach(s => {
       if(coinSources[s]?.includes(ex)) {
-        const d = balances[s]?.[ex];
-        let am = (typeof d === 'object') ? parseFloat(d.amount||0) : parseFloat(d||0);
-        let st = (typeof d === 'object') ? parseFloat(d.staking||0) : 0;
+        const d = balances[s]?.[ex]; let am = (typeof d === 'object') ? parseFloat(d.amount||0) : parseFloat(d||0); let st = (typeof d === 'object') ? parseFloat(d.staking||0) : 0;
         if(am+st > 0) csv += `${ex},${s},${am},${st},${prices[s]||0},${((am+st)*(prices[s]||0)).toFixed(2)}\n`;
       }
     });
   });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-  a.download = `${fileName.toUpperCase().trim()}.csv`;
-  a.click();
-  showToast('CSV Berhasil Disimpan!');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `${fileName.toUpperCase().trim()}.csv`; a.click(); showToast('CSV Berhasil Disimpan!');
 }
-
 function renameProcess(oldVal, newVal, type) {
   if(newVal && newVal.trim() !== '' && newVal.toUpperCase() !== oldVal) {
     const upper = newVal.toUpperCase().trim();
@@ -2512,11 +1049,8 @@ function renameProcess(oldVal, newVal, type) {
     saveAll(); renderList();
   }
 }
-
-// HOLD (long press)
 function startHold(event, id, type) {
-  const touch = event.touches ? event.touches[0] : event;
-  startX = touch.clientX; startY = touch.clientY;
+  const touch = event.touches ? event.touches[0] : event; startX = touch.clientX; startY = touch.clientY;
   holdTimer = setTimeout(() => {
     if(type === 'exchange') confirmModal(`HAPUS ${id}?`, 'delete', () => { allExchanges = allExchanges.filter(ex => ex !== id); saveAll(); renderList(); }, () => renamePopup(id, 'exchange'));
     else confirmModal(`HAPUS ${id}?`, 'delete', () => { watchlist = watchlist.filter(s => s !== id); delete balances[id]; delete coinSources[id]; saveAll(); renderList(); }, () => renamePopup(id, 'coin'));
