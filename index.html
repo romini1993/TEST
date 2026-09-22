@@ -709,9 +709,17 @@
     @media (min-width: 700px) {
       :root { --sidebar-w: 420px; }
 
+      body {
+        display: flex;
+        justify-content: center;
+      }
+
       .app-shell {
         flex-direction: row;
         min-height: 100vh;
+        width: 100%;
+        max-width: 1600px;
+        padding: 0 20px;
       }
 
       /* Left sidebar */
@@ -2130,8 +2138,11 @@ function updatePricesOnly() {
 
   const idrTotal = fmtIDR(totalUsd * usdToIdr);
   const usdTotal = fmtUSD(totalUsd);
-  ['total-all-idr','total-idr-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = idrTotal; });
-  ['total-all-usd','total-usd-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = usdTotal; });
+  // Slot besar (id -idr / -desk) & slot kecil (id -usd) tuker isi sesuai currency yang lagi dipilih
+  const primaryTotal = cur === 'USD' ? usdTotal : idrTotal;
+  const secondaryTotal = cur === 'USD' ? idrTotal : usdTotal;
+  ['total-all-idr','total-idr-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = primaryTotal; });
+  ['total-all-usd','total-usd-desk'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = secondaryTotal; });
 
   // asset count badge
   const cnt = currentTab === 'exchange' ? allExchanges.length : watchlist.length;
