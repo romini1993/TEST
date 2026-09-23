@@ -1607,8 +1607,24 @@ function pickExFromSearch(ex) {
 }
 
 
+// ══════════════════════════════
+//  MULTI-USER SYNC — LOGIN & CLOUD
+// ══════════════════════════════
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycby2sWFj_-Altg7u7OcxWT-CxdMJzJhzJlOvhIK3QDt00dGUpklVrgZPXB-BZxAdmFKMjA/exec';
-const SYNC_PIN = 'SATRIA';
+
+function getCreds() {
+  const u = localStorage.getItem('porto_user');
+  const p = localStorage.getItem('porto_pass');
+  return (u && p) ? { username: u, password: p } : null;
+}
+function saveCreds(u, p) {
+  localStorage.setItem('porto_user', u);
+  localStorage.setItem('porto_pass', p);
+}
+function clearCreds() {
+  localStorage.removeItem('porto_user');
+  localStorage.removeItem('porto_pass');
+}
 
 function setSyncStatus(msg, type) {
   ['sync-status-desk','sync-status-mob'].forEach(id => {
@@ -1619,60 +1635,123 @@ function setSyncStatus(msg, type) {
   });
 }
 
-// Simpan ke cloud — pakai PIN
-function syncPushWithPin() {
+// Modal login / daftar akun baru
+function openAuthModal(onSuccess) {
   const overlay = document.getElementById('modal-overlay');
+  document.getElementById('modal-title').innerText = '🔐 MASUK / DAFTAR AKUN';
   const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = '🔐 MASUKKAN SANDI';
   inp.style.display = 'block';
-  inp.type = 'password';
+  inp.type = 'text';
   inp.value = '';
-  inp.placeholder = 'Sandi...';
+  inp.placeholder = 'Username...';
+
+  let passInp = document.getElementById('modal-input-pass');
+  if (!passInp) {
+    passInp = document.createElement('input');
+    passInp.type = 'password';
+    passInp.id = 'modal-input-pass';
+    passInp.className = 'modal-input';
+    passInp.placeholder = 'Password...';
+    inp.insertAdjacentElement('afterend', passInp);
+  }
+  passInp.style.display = 'block';
+  passInp.value = '';
+
   document.getElementById('modal-btns').innerHTML = `
-    <button class="modal-btn mb-ok" id="btn-pin-ok">SIMPAN</button>
-    <button class="modal-btn mb-cancel" onclick="closeModal();document.getElementById('modal-input').type='text'">BATAL</button>`;
-  document.getElementById('btn-pin-ok').onclick = () => {
-    if (inp.value.toUpperCase() === SYNC_PIN) {
-      inp.type = 'text'; closeModal(); syncPush();
-    } else {
-      inp.value = '';
-      inp.placeholder = '❌ Sandi salah, coba lagi';
-      inp.style.borderColor = 'var(--red)';
-      setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = 'Sandi...'; }, 1500);
+    <button class="modal-btn mb-ok" id="btn-login-ok">MASUK</button>
+    <button class="modal-btn mb-edit" id="btn-register-ok">DAFTAR BARU</button>
+    <button class="modal-btn mb-cancel" id="btn-auth-cancel">BATAL</button>`;
+
+  function cleanup() {
+    passInp.style.display = 'none';
+    closeModal();
+  }
+
+  document.getElementById('btn-auth-cancel').onclick = cleanup;
+
+  // "MASUK" — simpan kredensial lokal, verifikasi asli terjadi
+  // saat push/pull (backend yang tolak kalau salah).
+  document.getElementById('btn-login-ok').onclick = () => {
+    const u = inp.value.trim();
+    const p = passInp.value;
+    if (!u || !p) { showToast('Isi username & password!'); return; }
+    saveCreds(u, p);
+    cleanup();
+    onSuccess();
+  };
+
+  document.getElementById('btn-register-ok').onclick = async () => {
+    const u = inp.value.trim();
+    const p = passInp.value;
+    if (!u || !p) { showToast('Isi username & password!'); return; }
+    try {
+      const res = await fetch(SYNC_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'register', username: u, password: p })
+      });
+      const json = await res.json();
+      if (json.status === 'ok') {
+        saveCreds(u, p);
+        cleanup();
+        showToast('✅ Akun dibuat! Lanjut sync...');
+        onSuccess();
+      } else {
+        showToast('❌ ' + (json.message || 'Gagal daftar'));
+      }
+    } catch (err) {
+      showToast('❌ Gagal daftar (koneksi)');
     }
   };
-  inp.onkeypress = (e) => { if (e.key === 'Enter') document.getElementById('btn-pin-ok')?.click(); };
+
   overlay.classList.add('active');
   setTimeout(() => inp.focus(), 200);
 }
 
-// Ambil dari cloud — pakai confirm peringatan
+function ensureAuth(next) {
+  const creds = getCreds();
+  if (creds) { next(); return; }
+  openAuthModal(next);
+}
+
+function syncPushWithPin() { ensureAuth(syncPush); }
+
 function syncPullWithConfirm() {
-  const overlay = document.getElementById('modal-overlay');
-  const inp = document.getElementById('modal-input');
-  document.getElementById('modal-title').innerText = '⚠️ AMBIL DATA DARI CLOUD?';
-  inp.style.display = 'none';
-  document.getElementById('modal-btns').innerHTML = `
-    <div style="width:100%;text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">
-      Data lokal akan diganti dengan data dari cloud.<br>Pastikan data cloud sudah tersimpan dengan benar.
-    </div>
-    <button class="modal-btn mb-ok" id="btn-pull-ok">AMBIL</button>
-    <button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
-  document.getElementById('btn-pull-ok').onclick = () => { closeModal(); syncPull(); };
-  overlay.classList.add('active');
+  ensureAuth(() => {
+    const overlay = document.getElementById('modal-overlay');
+    const inp = document.getElementById('modal-input');
+    document.getElementById('modal-title').innerText = '⚠️ AMBIL DATA DARI CLOUD?';
+    inp.style.display = 'none';
+    document.getElementById('modal-btns').innerHTML = `
+      <div style="width:100%;text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">
+        Data lokal akan diganti dengan data dari cloud.<br>Pastikan data cloud sudah tersimpan dengan benar.
+      </div>
+      <button class="modal-btn mb-ok" id="btn-pull-ok">AMBIL</button>
+      <button class="modal-btn mb-cancel" onclick="closeModal()">BATAL</button>`;
+    document.getElementById('btn-pull-ok').onclick = () => { closeModal(); syncPull(); };
+    overlay.classList.add('active');
+  });
 }
 
 async function syncPush() {
+  const creds = getCreds();
+  if (!creds) return;
   setSyncStatus('⏳ Menyimpan...', 'loading');
   document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = true);
   try {
     const payload = { assets: watchlist, balances, sources: coinSources, exchanges: allExchanges };
-    const res = await fetch(SYNC_URL, { method: 'POST', body: JSON.stringify(payload) });
+    const res = await fetch(SYNC_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'push', username: creds.username, password: creds.password, payload })
+    });
     const json = await res.json();
     if (json.status === 'ok') {
       const t = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
       setSyncStatus('✅ Tersimpan ' + t, 'ok');
       showToast('✅ Data berhasil disimpan ke cloud!');
+    } else if (json.message === 'Password salah' || json.message === 'Akun tidak ditemukan') {
+      clearCreds();
+      setSyncStatus('❌ Login gagal', 'err');
+      showToast('❌ ' + json.message + ', coba masuk lagi');
     } else throw new Error(json.message || 'Error');
   } catch (err) {
     setSyncStatus('❌ Gagal simpan', 'err');
@@ -1682,10 +1761,15 @@ async function syncPush() {
 }
 
 async function syncPull() {
+  const creds = getCreds();
+  if (!creds) return;
   setSyncStatus('⏳ Mengambil...', 'loading');
   document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = true);
   try {
-    const res = await fetch(SYNC_URL + '?t=' + Date.now());
+    const res = await fetch(SYNC_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'pull', username: creds.username, password: creds.password })
+    });
     const json = await res.json();
     if (json.status === 'ok' && json.data) {
       const d = json.data;
@@ -1699,12 +1783,23 @@ async function syncPull() {
     } else if (json.status === 'empty') {
       setSyncStatus('⚠️ Cloud masih kosong', 'err');
       showToast('⚠️ Belum ada data di cloud. Simpan dulu!');
+    } else if (json.message === 'Password salah' || json.message === 'Akun tidak ditemukan') {
+      clearCreds();
+      setSyncStatus('❌ Login gagal', 'err');
+      showToast('❌ ' + json.message + ', coba masuk lagi');
     } else throw new Error(json.message || 'Error');
   } catch (err) {
     setSyncStatus('❌ Gagal ambil', 'err');
     showToast('❌ Gagal ambil dari cloud!');
   }
   document.querySelectorAll('.bk-btn-sync').forEach(b => b.disabled = false);
+}
+
+// (Opsional) panggil logoutSync() dari tombol baru kalau mau
+// kasih fitur "Ganti Akun" di device ini.
+function logoutSync() {
+  clearCreds();
+  showToast('Akun sync di-reset di perangkat ini');
 }
 
 // ══════════════════════════════
